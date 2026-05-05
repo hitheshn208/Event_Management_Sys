@@ -1,0 +1,13 @@
+services:
+  app:
+    image: app:latest
+    container_name: emanager
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: base
+    environment_file: .env
+    ports:
+      - ${PORT}:${PORT}
+    volumes:
+      - "./logs:/app/logs"
