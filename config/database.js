@@ -11,10 +11,12 @@ const pool = new Pool({
     port: process.env.DB_PORT,
 })
 
-async function test() {
-    const response = await pool.query("SELECT NOW()");
-    console.log(response.rows[0].now);
-}
+module.exports = pool;
 
-test()
-// module.exports = pool;
+// async function test() {
+//     const res = await pool.query("SELECT current_database()");
+//     const tim = await pool.query("SELECT NOW()");
+// console.log(res.rows, tim.rows);
+// }
+
+// test();
