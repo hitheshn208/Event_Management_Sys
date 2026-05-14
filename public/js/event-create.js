@@ -398,6 +398,21 @@ function validateFormData() {
 // Handle form submission
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('event-form');
+    const scrollProgress = document.getElementById('scroll-progress');
+
+    function updateScrollProgress() {
+        if (!scrollProgress) {
+            return;
+        }
+
+        const scrollTop = window.scrollY || document.documentElement.scrollTop;
+        const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const progress = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+        scrollProgress.style.width = `${Math.min(100, Math.max(0, progress))}%`;
+    }
+
+    window.addEventListener('scroll', updateScrollProgress, { passive: true });
+    updateScrollProgress();
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
