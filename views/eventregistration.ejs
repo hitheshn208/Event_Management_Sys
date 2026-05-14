@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Event</title>
+    <link rel="stylesheet" href="/css/event-create.css">
+    <link rel="stylesheet" href="/home/susaki/events/public/css/event-create.css">
+</head>
+<body>
+    <div class="navbar">
+        <a href="/dashboard" class="back-btn">Back to Dashboard</a>
+    </div>
+
+    <div class="page-container">
+        <div class="form-header">
+            <h1>Create New Event</h1>
+            <p>Fill in all the details to organize your event</p>
+        </div>
+
+        <form action="/events/create" method="POST" enctype="multipart/form-data" class="event-form">
+            
+            <!-- EVENT RELATED SECTION -->
+            <section class="form-section">
+                <h2>Event Related Information</h2>
+                
+                <div class="form-group">
+                    <label for="eventName">Event Name *</label>
+                    <input type="text" id="eventName" name="eventName" required placeholder="Enter event name">
+                </div>
+
+                <div class="form-group">
+                    <label for="eventDescription">Description *</label>
+                    <textarea id="eventDescription" name="eventDescription" required placeholder="Enter event description" rows="4"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="eventCategory">Category *</label>
+                    <select id="eventCategory" name="eventCategory" required>
+                        <option value="">Select a category</option>
+                        <option value="conference">Conference</option>
+                        <option value="workshop">Workshop</option>
+                        <option value="seminar">Seminar</option>
+                        <option value="networking">Networking</option>
+                        <option value="training">Training</option>
+                        <option value="competition">Competition</option>
+                        <option value="hackathon">Hackathon</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="eventComments">Comments</label>
+                    <textarea id="eventComments" name="eventComments" placeholder="Add any additional comments or notes about the event" rows="4"></textarea>
+                </div>
+            </section>
+
+            <!-- VENUE AND TIME RELATED SECTION -->
+            <section class="form-section">
+                <h2>Venue & Time Related Information</h2>
+
+                <div class="form-group">
+                    <label for="eventLocation">Location *</label>
+                    <input type="text" id="eventLocation" name="eventLocation" required placeholder="Enter event location">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="eventDate">Event Date *</label>
+                        <input type="date" id="eventDate" name="eventDate" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="eventTime">Event Time (IST) *</label>
+                        <input type="time" id="eventTime" name="eventTime" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="eventTicketPrice">Ticket Price (₹) *</label>
+                    <input type="number" id="eventTicketPrice" name="eventTicketPrice" required min="0" step="1" placeholder="0">
+                </div>
+            </section>
+
+            <!-- STUDENT RELATED SECTION -->
+            <section class="form-section">
+                <h2>Student & Team Related Information</h2>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="eventCapacity">Total Capacity (Students) *</label>
+                        <input type="number" id="eventCapacity" name="eventCapacity" required min="1" placeholder="Number of students">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="minTeamSize">Minimum Team Size *</label>
+                        <input type="number" id="minTeamSize" name="minTeamSize" required min="1" placeholder="Minimum members">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="maxTeamSize">Maximum Team Size *</label>
+                        <input type="number" id="maxTeamSize" name="maxTeamSize" required min="1" placeholder="Maximum members">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="totalTeams">Total Teams for Event *</label>
+                        <input type="number" id="totalTeams" name="totalTeams" required min="1" placeholder="Expected number of teams">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="whatsappGroup">WhatsApp Group Link *</label>
+                    <input type="url" id="whatsappGroup" name="whatsappGroup" required placeholder="https://chat.whatsapp.com/...">
+                </div>
+
+                <div class="form-group">
+                <div class="form-group">
+                    <label for="eventPhotos">Event Brochure (Photos)</label>
+                    <div class="file-upload-area" id="fileUploadArea">
+                        <input type="file" id="eventPhotos" name="eventPhotos" multiple accept="image/*">
+                        <div class="file-upload-text">
+                            <p>Click to upload or drag and drop</p>
+                            <span>PNG, JPG, GIF up to 10MB each</span>
+                        </div>
+                    </div>
+                    <div id="file-list" class="file-list"></div>
+                    <div id="image-preview" class="image-preview"></div>
+                </div>
+            </section>
+
+            <!-- COORDINATORS SECTION -->
+            <section class="form-section">
+                <div class="section-header">
+                    <h2>Event Coordinators</h2>
+                    <button type="button" class="add-coordinator-btn" onclick="addCoordinator(event)">+</button>
+                </div>
+
+                <div id="coordinators-container">
+                    <div class="coordinator-card" data-coordinator-id="0">
+                        <div class="coordinator-header">
+                            <h3>Coordinator 1</h3>
+                            <button type="button" class="remove-btn" onclick="removeCoordinator(event, 0)" style="display: none;">Remove</button>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="coordinatorName-0">Coordinator Name *</label>
+                                <input type="text" id="coordinatorName-0" name="coordinatorName[]" required placeholder="Full name">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="coordinatorEmail-0">Email *</label>
+                                <input type="email" id="coordinatorEmail-0" name="coordinatorEmail[]" required placeholder="email@example.com">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="coordinatorPhone-0">Phone Number *</label>
+                            <input type="tel" id="coordinatorPhone-0" name="coordinatorPhone[]" required placeholder="+91 XXXXX XXXXX">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CONTACT INFORMATION SECTION -->
+            <section class="form-section">
+                <h2>Primary Contact Information</h2>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="eventContact">Primary Contact Email *</label>
+                        <input type="email" id="eventContact" name="eventContact" required placeholder="organizer@email.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="eventPhone">Primary Contact Phone *</label>
+                        <input type="tel" id="eventPhone" name="eventPhone" required placeholder="+91 XXXXX XXXXX">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Submit Button -->
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Create Event</button>
+            </div>
+
+        </form>
+    </div>
+
+    <script src="/js/event-create.js"></script>
+    <script src="/home/susaki/events/public/js/event-create.js"></script>
+</body>
+</html>
