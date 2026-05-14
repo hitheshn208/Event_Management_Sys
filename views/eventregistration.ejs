@@ -3,35 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Event</title>
+    <title>Create Event - EventHub</title>
     <link rel="stylesheet" href="/css/event-create.css">
-    <link rel="stylesheet" href="/home/susaki/events/public/css/event-create.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="navbar">
-        <a href="/dashboard" class="back-btn">Back to Dashboard</a>
+        <a href="/organization/dashboard" class="back-btn">← Back to Dashboard</a>
     </div>
 
     <div class="page-container">
         <div class="form-header">
             <h1>Create New Event</h1>
-            <p>Fill in all the details to organize your event</p>
+            <p>Organize and manage your university event</p>
         </div>
 
-        <form action="/events/create" method="POST" enctype="multipart/form-data" class="event-form">
+        <div id="error-message" class="error-message" aria-live="polite" style="display: none;"></div>
+        <div id="success-message" class="success-message" aria-live="polite" style="display: none;"></div>
+
+        <form id="event-form" class="event-form">
             
-            <!-- EVENT RELATED SECTION -->
+            <!-- BASIC INFORMATION SECTION -->
             <section class="form-section">
-                <h2>Event Related Information</h2>
+                <h2>Basic Information</h2>
                 
                 <div class="form-group">
                     <label for="eventName">Event Name *</label>
                     <input type="text" id="eventName" name="eventName" required placeholder="Enter event name">
-                </div>
-
-                <div class="form-group">
-                    <label for="eventDescription">Description *</label>
-                    <textarea id="eventDescription" name="eventDescription" required placeholder="Enter event description" rows="4"></textarea>
                 </div>
 
                 <div class="form-group">
@@ -50,19 +48,14 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="eventComments">Comments</label>
-                    <textarea id="eventComments" name="eventComments" placeholder="Add any additional comments or notes about the event" rows="4"></textarea>
+                    <label for="eventDescription">Description *</label>
+                    <textarea id="eventDescription" name="eventDescription" required placeholder="Enter event description" rows="4"></textarea>
                 </div>
             </section>
 
-            <!-- VENUE AND TIME RELATED SECTION -->
+            <!-- DATE & TIME SECTION -->
             <section class="form-section">
-                <h2>Venue & Time Related Information</h2>
-
-                <div class="form-group">
-                    <label for="eventLocation">Location *</label>
-                    <input type="text" id="eventLocation" name="eventLocation" required placeholder="Enter event location">
-                </div>
+                <h2>Date & Time</h2>
 
                 <div class="form-row">
                     <div class="form-group">
@@ -75,58 +68,101 @@
                         <input type="time" id="eventTime" name="eventTime" required>
                     </div>
                 </div>
+            </section>
 
-                <div class="form-group">
-                    <label for="eventTicketPrice">Ticket Price (₹) *</label>
-                    <input type="number" id="eventTicketPrice" name="eventTicketPrice" required min="0" step="1" placeholder="0">
+            <!-- VENUE SECTION -->
+            <section class="form-section">
+                <h2>Venue Information</h2>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="eventBlock">Block *</label>
+                        <select id="eventBlock" name="eventBlock" required onchange="updateHalls()">
+                            <option value="">Select a block</option>
+                            <option value="block1">Block 1 - ESB</option>
+                            <option value="block2">Block 2 - DES</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="eventHall">Hall *</label>
+                        <select id="eventHall" name="eventHall" required>
+                            <option value="">Select a hall</option>
+                        </select>
+                    </div>
                 </div>
             </section>
 
-            <!-- STUDENT RELATED SECTION -->
+            <!-- GROUP CHAT SECTION -->
             <section class="form-section">
-                <h2>Student & Team Related Information</h2>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="eventCapacity">Total Capacity (Students) *</label>
-                        <input type="number" id="eventCapacity" name="eventCapacity" required min="1" placeholder="Number of students">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="minTeamSize">Minimum Team Size *</label>
-                        <input type="number" id="minTeamSize" name="minTeamSize" required min="1" placeholder="Minimum members">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="maxTeamSize">Maximum Team Size *</label>
-                        <input type="number" id="maxTeamSize" name="maxTeamSize" required min="1" placeholder="Maximum members">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="totalTeams">Total Teams for Event *</label>
-                        <input type="number" id="totalTeams" name="totalTeams" required min="1" placeholder="Expected number of teams">
-                    </div>
-                </div>
+                <h2>Group Chat</h2>
 
                 <div class="form-group">
-                    <label for="whatsappGroup">WhatsApp Group Link *</label>
-                    <input type="url" id="whatsappGroup" name="whatsappGroup" required placeholder="https://chat.whatsapp.com/...">
+                    <label for="groupChatLink">WhatsApp Group Link *</label>
+                    <input type="url" id="groupChatLink" name="groupChatLink" required placeholder="https://chat.whatsapp.com/...">
                 </div>
+            </section>
+
+            <!-- EVENT TYPE SECTION -->
+            <section class="form-section">
+                <h2>Event Type</h2>
 
                 <div class="form-group">
-                <div class="form-group">
-                    <label for="eventPhotos">Event Brochure (Photos)</label>
-                    <div class="file-upload-area" id="fileUploadArea">
-                        <input type="file" id="eventPhotos" name="eventPhotos" multiple accept="image/*">
-                        <div class="file-upload-text">
-                            <p>Click to upload or drag and drop</p>
-                            <span>PNG, JPG, GIF up to 10MB each</span>
+                    <label>Event Format *</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="eventTypeIndividual" name="eventType" value="individual" required onchange="toggleEventTypeFields()">
+                            <label for="eventTypeIndividual">Individual Participants</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="eventTypeTeam" name="eventType" value="team" required onchange="toggleEventTypeFields()">
+                            <label for="eventTypeTeam">Team Based</label>
                         </div>
                     </div>
-                    <div id="file-list" class="file-list"></div>
-                    <div id="image-preview" class="image-preview"></div>
+                </div>
+
+                <!-- Individual Fields -->
+                <div id="individual-fields" class="event-type-fields" style="display: none;">
+                    <div class="form-group">
+                        <label for="totalCapacity">Total Capacity (Students) *</label>
+                        <input type="number" id="totalCapacity" name="totalCapacity" min="1" placeholder="Number of students">
+                    </div>
+                </div>
+
+                <!-- Team Fields -->
+                <div id="team-fields" class="event-type-fields" style="display: none;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="minTeamSize">Minimum Team Size *</label>
+                            <input type="number" id="minTeamSize" name="minTeamSize" min="1" placeholder="Minimum members">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="maxTeamSize">Maximum Team Size *</label>
+                            <input type="number" id="maxTeamSize" name="maxTeamSize" min="1" placeholder="Maximum members">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="totalTeams">Total Capacity (Teams) *</label>
+                        <input type="number" id="totalTeams" name="totalTeams" min="1" placeholder="Expected number of teams">
+                    </div>
+                </div>
+            </section>
+
+            <!-- CUSTOM RULES SECTION -->
+            <section class="form-section">
+                <h2>Custom Rules</h2>
+
+                <div class="form-group">
+                    <label for="departmentRestriction">Department Restriction</label>
+                    <select id="departmentRestriction" name="departmentRestriction">
+                        <option value="">No Restriction - All Departments</option>
+                        <option value="cse">CSE</option>
+                        <option value="ise">ISE</option>
+                        <option value="aiml">AIML</option>
+                        <option value="aids">AIDS</option>
+                    </select>
                 </div>
             </section>
 
@@ -146,39 +182,37 @@
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="coordinatorName-0">Coordinator Name *</label>
-                                <input type="text" id="coordinatorName-0" name="coordinatorName[]" required placeholder="Full name">
+                                <label for="coordinatorName-0">Name *</label>
+                                <input type="text" id="coordinatorName-0" class="coordinator-name" placeholder="Full name">
                             </div>
 
                             <div class="form-group">
                                 <label for="coordinatorEmail-0">Email *</label>
-                                <input type="email" id="coordinatorEmail-0" name="coordinatorEmail[]" required placeholder="email@example.com">
+                                <input type="email" id="coordinatorEmail-0" class="coordinator-email" placeholder="email@example.com">
                             </div>
                         </div>
 
                         <div class="form-group">
                             <label for="coordinatorPhone-0">Phone Number *</label>
-                            <input type="tel" id="coordinatorPhone-0" name="coordinatorPhone[]" required placeholder="+91 XXXXX XXXXX">
+                            <input type="tel" id="coordinatorPhone-0" class="coordinator-phone" placeholder="+91 XXXXX XXXXX">
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- CONTACT INFORMATION SECTION -->
+            <!-- IMAGE UPLOAD SECTION -->
             <section class="form-section">
-                <h2>Primary Contact Information</h2>
+                <h2>Event Brochure (Photos)</h2>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="eventContact">Primary Contact Email *</label>
-                        <input type="email" id="eventContact" name="eventContact" required placeholder="organizer@email.com">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="eventPhone">Primary Contact Phone *</label>
-                        <input type="tel" id="eventPhone" name="eventPhone" required placeholder="+91 XXXXX XXXXX">
+                <div class="file-upload-area" id="fileUploadArea">
+                    <input type="file" id="eventPhotos" name="eventPhotos" accept="image/*">
+                    <div class="file-upload-text">
+                        <p>Click to upload or drag and drop</p>
+                        <span>PNG, JPG up to 10MB</span>
                     </div>
                 </div>
+                <div id="file-list" class="file-list"></div>
+                <div id="image-preview" class="image-preview"></div>
             </section>
 
             <!-- Submit Button -->
@@ -190,6 +224,5 @@
     </div>
 
     <script src="/js/event-create.js"></script>
-    <script src="/home/susaki/events/public/js/event-create.js"></script>
 </body>
 </html>
