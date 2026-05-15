@@ -1,9 +1,12 @@
 const express = require("express");
-const { showOrgDashboard, showOrganiseEvent } = require("../controllers/organizationController");
+const multer = require("multer");
+const { showOrgDashboard, showOrganiseEvent, createEvent } = require("../controllers/organizationController");
 
-const orgRouter = express.Router()
+const upload = multer();
+const orgRouter = express.Router({})
 
 orgRouter.get("/dashboard", showOrgDashboard);
-orgRouter.get("/organise-event", showOrganiseEvent)
+orgRouter.get("/organise-event", showOrganiseEvent);
+orgRouter.post("/organise-event", upload.array("images"), createEvent);
 
 module.exports = orgRouter;
