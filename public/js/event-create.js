@@ -1,10 +1,10 @@
 // Hall mappings
 const hallMappings = {
-    block1: [
+    esb: [
         { value: 'esb_seminar_1', label: 'SEMINAR HALL 1' },
         { value: 'esb_seminar_2', label: 'SEMINAR HALL 2' }
     ],
-    block2: [
+    des: [
         { value: 'des_hitech_1', label: 'HITECH SEMINAR HALL 1' },
         { value: 'des_hitech_2', label: 'HITECH SEMINAR HALL 2' }
     ]
@@ -74,18 +74,18 @@ function addCoordinator(event) {
 
         <div class="form-row">
             <div class="form-group">
-                <label for="coordinatorName-${newId}">Name *</label>
+                <label for="coordinatorName-${newId}">Name <span style="color: red">*</span></label>
                 <input type="text" id="coordinatorName-${newId}" class="coordinator-name" placeholder="Full name">
             </div>
 
             <div class="form-group">
-                <label for="coordinatorEmail-${newId}">Email *</label>
+                <label for="coordinatorEmail-${newId}">Email <span style="color: red">*</span></label>
                 <input type="email" id="coordinatorEmail-${newId}" class="coordinator-email" placeholder="email@example.com">
             </div>
         </div>
 
         <div class="form-group">
-            <label for="coordinatorPhone-${newId}">Phone Number *</label>
+            <label for="coordinatorPhone-${newId}">Phone Number <span style="color: red">*</span></label>
             <input type="tel" id="coordinatorPhone-${newId}" class="coordinator-phone" placeholder="+91 XXXXX XXXXX">
         </div>
     `;
@@ -251,6 +251,7 @@ function validateFormData() {
     const groupChatLink = document.getElementById('groupChatLink').value.trim();
     const eventType = document.querySelector('input[name="eventType"]:checked');
     const departmentRestriction = document.getElementById('departmentRestriction').value;
+    const eventInstructions = document.getElementById('eventInstructions').value.trim();
 
     // Basic validations
     if (!eventName) {
@@ -288,10 +289,10 @@ function validateFormData() {
         return null;
     }
 
-    if (!groupChatLink) {
-        showMessage('WhatsApp group link is required', true);
-        return null;
-    }
+    // if (!groupChatLink) {
+    //     showMessage('WhatsApp group link is required', true);
+    //     return null;
+    // }
 
     if (!eventType) {
         showMessage('Event type is required', true);
@@ -389,6 +390,7 @@ function validateFormData() {
         eventHall,
         groupChatLink,
         departmentRestriction: departmentRestriction || null,
+        eventInstructions: eventInstructions || null,
         eventType: eventTypeData,
         coordinators,
         images: uploadedFiles
@@ -438,8 +440,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 time: formData.eventTime,
                 block: formData.eventBlock,
                 hall: formData.eventHall,
-                groupChatLink: formData.groupChatLink,
+                groupChatLink: formData.groupChatLink.length === 0? null : formData.groupChatLink,
                 departmentRestriction: formData.departmentRestriction,
+                eventInstructions: formData.eventInstructions,
                 eventType: formData.eventType,
                 coordinators: formData.coordinators
             }));
@@ -474,16 +477,17 @@ document.addEventListener('DOMContentLoaded', () => {
             if (responseData.redirectUrl) {
                 setTimeout(() => {
                     window.location.href = responseData.redirectUrl;
+                    submitButton.disabled = false;
+                    submitButton.textContent = originalText;
                 }, 1500);
             } else {
                 // Redirect to dashboard after 2 seconds
                 setTimeout(() => {
-                    window.location.href = '/dashboard';
+                    window.location.href = '/organization/dashboard';
+                    submitButton.disabled = false;
+                    submitButton.textContent = originalText;
                 }, 1500);
             }
-
-            submitButton.disabled = false;
-            submitButton.textContent = originalText;
 
         } catch (error) {
             if (error.message !== 'validation-failed') {

@@ -29,12 +29,12 @@
                 <h2>Basic Information</h2>
                 
                 <div class="form-group">
-                    <label for="eventName">Event Name *</label>
+                    <label for="eventName">Event Name <span style="color: red">*</span></label>
                     <input type="text" id="eventName" name="eventName" required placeholder="Enter event name">
                 </div>
 
                 <div class="form-group">
-                    <label for="eventCategory">Category *</label>
+                    <label for="eventCategory">Category <span style="color: red">*</span></label>
                     <select id="eventCategory" name="eventCategory" required>
                         <option value="">Select a category</option>
                         <option value="conference">Conference</option>
@@ -49,7 +49,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="eventDescription">Description *</label>
+                    <label for="eventDescription">Description <span style="color: red">*</span></label>
                     <textarea id="eventDescription" name="eventDescription" required placeholder="Enter event description" rows="4"></textarea>
                 </div>
             </section>
@@ -60,12 +60,12 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="eventDate">Event Date *</label>
+                        <label for="eventDate">Event Date <span style="color: red">*</span></label>
                         <input type="date" id="eventDate" name="eventDate" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="eventTime">Event Time (IST) *</label>
+                        <label for="eventTime">Event Time (IST) <span style="color: red">*</span></label>
                         <input type="time" id="eventTime" name="eventTime" required>
                     </div>
                 </div>
@@ -77,16 +77,16 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="eventBlock">Block *</label>
+                        <label for="eventBlock">Block <span style="color: red">*</span></label>
                         <select id="eventBlock" name="eventBlock" required onchange="updateHalls()">
                             <option value="">Select a block</option>
-                            <option value="block1">Block 1 - ESB</option>
-                            <option value="block2">Block 2 - DES</option>
+                            <option value="esb">Block 1 - ESB</option>
+                            <option value="des">Block 2 - DES</option>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label for="eventHall">Hall *</label>
+                        <label for="eventHall">Hall <span style="color: red">*</span></label>
                         <select id="eventHall" name="eventHall" required>
                             <option value="">Select a hall</option>
                         </select>
@@ -99,8 +99,8 @@
                 <h2>Group Chat</h2>
 
                 <div class="form-group">
-                    <label for="groupChatLink">WhatsApp Group Link *</label>
-                    <input type="url" id="groupChatLink" name="groupChatLink" required placeholder="https://chat.whatsapp.com/...">
+                    <label for="groupChatLink">WhatsApp Group Link</label>
+                    <input type="url" id="groupChatLink" name="groupChatLink" placeholder="https://chat.whatsapp.com/...">
                 </div>
             </section>
 
@@ -109,23 +109,40 @@
                 <h2>Event Type</h2>
 
                 <div class="form-group">
-                    <label>Event Format *</label>
+                    <label>Event Format <span style="color: red">*</span></label>
                     <div class="radio-group">
-                        <div class="radio-option">
-                            <input type="radio" id="eventTypeIndividual" name="eventType" value="individual" required onchange="toggleEventTypeFields()">
-                            <label for="eventTypeIndividual">Individual Participants</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" id="eventTypeTeam" name="eventType" value="team" required onchange="toggleEventTypeFields()">
-                            <label for="eventTypeTeam">Team Based</label>
-                        </div>
+                        <input type="radio" id="eventTypeIndividual" class="radio-input" name="eventType" value="individual" required onchange="toggleEventTypeFields()">
+                        <label class="radio-option card-option" for="eventTypeIndividual">
+                            <span class="option-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" role="presentation">
+                                    <circle cx="12" cy="8" r="3.5"></circle>
+                                    <path d="M6 20v-1.2c0-3.1 2.7-5.6 6-5.6s6 2.5 6 5.6V20"></path>
+                                </svg>
+                            </span>
+                            <span class="option-content">
+                                <span class="option-title">Individual Participants</span>
+                                <span class="option-description">Students register separately</span>
+                            </span>
+                        </label>
+
+                        <input type="radio" id="eventTypeTeam" class="radio-input" name="eventType" value="team" required onchange="toggleEventTypeFields()">
+                        <label class="radio-option card-option" for="eventTypeTeam">
+                            <span class="option-icon team-icon" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="M0-240v-63q0-43 44-70t116-27q13 0 25 .5t23 2.5q-14 21-21 44t-7 48v65H0Zm240 0v-65q0-32 17.5-58.5T307-410q32-20 76.5-30t96.5-10q53 0 97.5 10t76.5 30q32 20 49 46.5t17 58.5v65H240Zm540 0v-65q0-26-6.5-49T754-397q11-2 22.5-2.5t23.5-.5q72 0 116 26.5t44 70.5v63H780Zm-455-80h311q-10-20-55.5-35T480-370q-55 0-100.5 15T325-320ZM160-440q-33 0-56.5-23.5T80-520q0-34 23.5-57t56.5-23q34 0 57 23t23 57q0 33-23 56.5T160-440Zm640 0q-33 0-56.5-23.5T720-520q0-34 23.5-57t56.5-23q34 0 57 23t23 57q0 33-23 56.5T800-440Zm-320-40q-50 0-85-35t-35-85q0-51 35-85.5t85-34.5q51 0 85.5 34.5T600-600q0 50-34.5 85T480-480Zm0-80q17 0 28.5-11.5T520-600q0-17-11.5-28.5T480-640q-17 0-28.5 11.5T440-600q0 17 11.5 28.5T480-560Zm1 240Zm-1-280Z"/>
+                                </svg>
+                            </span>
+                            <span class="option-content">
+                                <span class="option-title">Team Based</span>
+                                <span class="option-description">Students register as a group</span>
+                            </span>
+                        </label>
                     </div>
                 </div>
 
                 <!-- Individual Fields -->
                 <div id="individual-fields" class="event-type-fields" style="display: none;">
                     <div class="form-group">
-                        <label for="totalCapacity">Total Capacity (Students) *</label>
+                        <label for="totalCapacity">Total Capacity (Students) <span style="color: red">*</span></label>
                         <input type="number" id="totalCapacity" name="totalCapacity" min="1" placeholder="Number of students">
                     </div>
                 </div>
@@ -134,26 +151,26 @@
                 <div id="team-fields" class="event-type-fields" style="display: none;">
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="minTeamSize">Minimum Team Size *</label>
+                            <label for="minTeamSize">Minimum Team Size <span style="color: red">*</span></label>
                             <input type="number" id="minTeamSize" name="minTeamSize" min="1" placeholder="Minimum members">
                         </div>
 
                         <div class="form-group">
-                            <label for="maxTeamSize">Maximum Team Size *</label>
+                            <label for="maxTeamSize">Maximum Team Size <span style="color: red">*</span></label>
                             <input type="number" id="maxTeamSize" name="maxTeamSize" min="1" placeholder="Maximum members">
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="totalTeams">Total Capacity (Teams) *</label>
+                        <label for="totalTeams">Total Capacity (Teams) <span style="color: red">*</span></label>
                         <input type="number" id="totalTeams" name="totalTeams" min="1" placeholder="Expected number of teams">
                     </div>
                 </div>
             </section>
 
-            <!-- CUSTOM RULES SECTION -->
+            <!-- CUSTOM INSTRUCTION SECTION -->
             <section class="form-section">
-                <h2>Custom Rules</h2>
+                <h2>Custom Instruction</h2>
 
                 <div class="form-group">
                     <label for="departmentRestriction">Department Restriction</label>
@@ -164,6 +181,11 @@
                         <option value="aiml">AIML</option>
                         <option value="aids">AIDS</option>
                     </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="eventInstructions">Instructions</label>
+                    <textarea id="eventInstructions" name="eventInstructions" rows="4" placeholder="Add any special instructions for participants"></textarea>
                 </div>
             </section>
 
@@ -183,18 +205,18 @@
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="coordinatorName-0">Name *</label>
+                                <label for="coordinatorName-0">Name <span style="color: red">*</span></label>
                                 <input type="text" id="coordinatorName-0" class="coordinator-name" placeholder="Full name">
                             </div>
 
                             <div class="form-group">
-                                <label for="coordinatorEmail-0">Email *</label>
+                                <label for="coordinatorEmail-0">Email <span style="color: red">*</span></label>
                                 <input type="email" id="coordinatorEmail-0" class="coordinator-email" placeholder="email@example.com">
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label for="coordinatorPhone-0">Phone Number *</label>
+                            <label for="coordinatorPhone-0">Phone Number <span style="color: red">*</span></label>
                             <input type="tel" id="coordinatorPhone-0" class="coordinator-phone" placeholder="+91 XXXXX XXXXX">
                         </div>
                     </div>
