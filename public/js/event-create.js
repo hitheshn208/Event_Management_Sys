@@ -447,10 +447,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 coordinators: formData.coordinators
             }));
 
-            // Add image files
-            formData.images.forEach((file, index) => {
-                requestFormData.append(`images`, file);
-            });
+            // Add a single image file named 'image' to match multer.single('image') on the server
+            if (formData.images && formData.images.length > 0) {
+                requestFormData.append('image', formData.images[0]);
+            }
 
             const response = await fetch('/organization/organise-event', {
                 method: 'POST',
