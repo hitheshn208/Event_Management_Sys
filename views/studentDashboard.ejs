@@ -3,9 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Dashboard</title>
+    <title>Student Dashboard - Event Registration</title>
+    <link rel="stylesheet" href="/css/student-dashboard.css">
+    <link rel="stylesheet" href="/home/susaki/events/public/css/student-dashboard.css">
 </head>
 <body>
-    <h1 ><center>Welcom to student dashboard</center></h1>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <!-- Left Side - Logo/Brand -->
+            <div class="navbar-left">
+                <a href="/" class="navbar-brand">
+                    <span class="brand-text">EventHub</span>
+                </a>
+            </div>
+
+            <!-- Right Side - Profile & Logout -->
+            <div class="navbar-right">
+                <button class="btn btn-nav btn-profile" onclick="window.location.href='/student-profile'" title="Go to profile">
+                    Profile
+                </button>
+                <button class="btn btn-nav btn-logout" onclick="handleLogout()" title="Logout">
+                    Logout
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="dashboard-container">
+        <div class="welcome-section">
+            <h1>Welcome!</h1>
+            <p>Your registered events are displayed below</p>
+        </div>
+
+        <!-- Events Section -->
+        <div class="events-section">
+            <div class="events-grid" id="eventsGrid">
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <h2>You haven't registered for any event</h2>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/js/student-dashboard.js"></script>
+    <script src="home/susaki/events/public/js/student-dashboard.js"></script>
 </body>
 </html>
