@@ -401,6 +401,8 @@ function validateFormData() {
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('event-form');
     const scrollProgress = document.getElementById('scroll-progress');
+    const isEditMode = form?.dataset.mode === 'edit';
+    const submitUrl = form?.dataset.submitUrl || '/organization/organise-event';
 
     function updateScrollProgress() {
         if (!scrollProgress) {
@@ -416,6 +418,9 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('scroll', updateScrollProgress, { passive: true });
     updateScrollProgress();
 
+    coordinatorCount = Math.max(1, document.querySelectorAll('.coordinator-card').length);
+    updateCoordinatorNumbers();
+
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
@@ -428,7 +433,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const originalText = submitButton.textContent;
 
             submitButton.disabled = true;
-            submitButton.textContent = 'Creating Event...';
+            submitButton.textContent = isEditMode ? 'Updating Event...' : 'Creating Event...';
 
             // Create FormData for file upload
             const requestFormData = new FormData();
@@ -452,8 +457,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 requestFormData.append('image', formData.images[0]);
             }
 
-            const response = await fetch('/organization/organise-event', {
-                method: 'POST',
+            const response = await fetch(submitUrl, {
+                method: isEditMode ? 'PUT' : 'POST',
                 body: requestFormData
             });
 
@@ -497,7 +502,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const submitButton = form.querySelector('button[type="submit"]');
             submitButton.disabled = false;
-            submitButton.textContent = 'Create Event';
+            submitButton.textContent = isEditMode ? 'Update Event' : 'Create Event';
         }
     });
 

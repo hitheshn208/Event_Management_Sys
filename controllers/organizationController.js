@@ -1,4 +1,4 @@
-const {checkVenue, registerEvent, addrules, addcoordinators, getEventsByOrgId} = require("../models/organizerModel")
+const {checkVenue, registerEvent, addrules, addcoordinators, getEventsByOrgId, getEventInfoByid, updateEvent} = require("../models/organizerModel")
 
 exports.showOrgDashboard = async (req, res)=>{
     try {
@@ -49,4 +49,61 @@ exports.createEvent = async (req, res)=>{
         })
     }
     console.log(req.body);
+}
+
+exports.editEvent = async (req, res)=>{
+    const eventid = req.params.eventId;
+    const orgId = req.user.id;
+    try {
+        const eventInfo = await getEventInfoByid(eventid, orgId);
+
+        if (!eventInfo) {
+            return res.status(404).send("Event not found");
+        }
+
+        return res.render("eventEdit", { event: eventInfo });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send("Internal server error");
+    }
+}
+
+exports.updateEvent = async (req, res) => {
+    const eventId = req.params.eventId;
+    const orgId = req.user.id;
+
+    try {
+        const parsedData = JSON.parse(req.body.data);
+        const imgurl = req.file ? "/uploads/" + req.file.filename : null;
+
+        await updateEvent({
+            eventId,
+            orgId,
+            name: parsedData.eventName,
+            category: parsedData.category,
+            description: parsedData.description,
+            eventDate: parsedData.date,
+            eventTime: parsedData.time,
+            groupChatLink: parsedData.groupChatLink,
+            block: parsedData.block,
+            hall: parsedData.hall,
+            imgurl,
+            isindividual: parsedData.eventType.type === "individual",
+            totalCapacity: parsedData.eventType.type === "individual" ? Number(parsedData.eventType.capacity) : Number(parsedData.eventType.totalTeams),
+            minMembers: parsedData.eventType.type === "individual" ? null : Number(parsedData.eventType.minSize),
+            maxMembers: parsedData.eventType.type === "individual" ? null : Number(parsedData.eventType.maxSize),
+            departmentAllowed: parsedData.departmentRestriction,
+            coordinators: parsedData.coordinators
+        });
+
+        return res.status(200).json({
+            message: "Event updated successfully",
+            redirectUrl: "/organization/dashboard"
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: error.message || "Internal server error"
+        });
+    }
 }
