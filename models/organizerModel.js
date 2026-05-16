@@ -35,7 +35,7 @@ function getCoordinatorQuery(coordinators, eventId){
     const placeholder = []
 
     coordinators.forEach((coordinator, index) => {
-        baseIndex = index*4;
+        const baseIndex = index*4;
         placeholder.push(`($${baseIndex + 1},$${baseIndex + 2},$${baseIndex + 3}, $${baseIndex + 4})`);
 
         values.push(eventId);
@@ -71,4 +71,122 @@ exports.getEventsByOrgId = async(orgid)=>{
         v.hall;`, [orgid]);
 
     return response.rows;
+}
+
+exports.getEventInfoByid = async (eventid, orgId)=>{
+    const response = await db.query(`SELECT
+    e.id,
+    e.name,
+    e.category,
+    e.description,
+    e.event_date,
+    e.event_time,
+    e.group_chatlink,
+    e.organizerid,
+
+    r.isindividual,
+    r.total_capacity,
+    r.min_members,
+    r.max_members,
+    r.department_allowed,
+
+    v.id AS venue_id,
+    v.block,
+    v.hall,
+
+    (
+        SELECT COALESCE(
+            json_agg(
+                jsonb_build_object(
+                    'id', c.id,
+                    'name', c.name,
+                    'phone', c.phone,
+                    'email', c.email
+                )
+            ),
+            '[]'
+        )
+        FROM coordinator c
+        WHERE c.eventid = e.id
+    ) AS coordinators
+
+FROM event e
+
+JOIN rules r
+    ON r.eventid = e.id
+
+JOIN venue v
+    ON v.id = e.venueid
+
+WHERE e.id = $1 AND organizerid = $2;`, [eventid, orgId]);
+
+    return response.rows[0] || null;
+}
+
+exports.updateEvent = async ({ eventId, orgId, name, category, description, eventDate, eventTime, groupChatLink, block, hall, imgurl, isindividual, totalCapacity, minMembers, maxMembers, departmentAllowed, coordinators }) => {
+    const client = await db.connect();
+
+    try {
+        await client.query('BEGIN');
+
+        const venueResponse = await client.query('SELECT id FROM venue WHERE block = $1 AND hall = $2', [block, hall]);
+
+        if (venueResponse.rows.length === 0) {
+            throw new Error('Venue not found');
+        }
+
+        const venueId = venueResponse.rows[0].id;
+
+        const eventQuery = imgurl
+            ? `UPDATE event
+                SET name = $1,
+                    category = $2,
+                    description = $3,
+                    event_date = $4,
+                    event_time = $5,
+                    group_chatlink = $6,
+                    venueid = $7,
+                    imgurl = $8
+                WHERE id = $9 AND organizerid = $10`
+            : `UPDATE event
+                SET name = $1,
+                    category = $2,
+                    description = $3,
+                    event_date = $4,
+                    event_time = $5,
+                    group_chatlink = $6,
+                    venueid = $7
+                WHERE id = $8 AND organizerid = $9`;
+
+        const eventQueryValues = imgurl
+            ? [name, category, description, eventDate, eventTime, groupChatLink, venueId, imgurl, eventId, orgId]
+            : [name, category, description, eventDate, eventTime, groupChatLink, venueId, eventId, orgId];
+
+        await client.query(eventQuery, eventQueryValues);
+
+        await client.query(
+            `UPDATE rules
+                SET isindividual = $1,
+                    total_capacity = $2,
+                    min_members = $3,
+                    max_members = $4,
+                    department_allowed = $5
+                WHERE eventid = $6`,
+            [isindividual, totalCapacity, minMembers, maxMembers, departmentAllowed, eventId]
+        );
+
+        await client.query('DELETE FROM coordinator WHERE eventid = $1', [eventId]);
+
+        if (coordinators && coordinators.length > 0) {
+            const { query, values } = getCoordinatorQuery(coordinators, eventId);
+            await client.query(query, values);
+        }
+
+        await client.query('COMMIT');
+    } catch (error) {
+        await client.query('ROLLBACK');
+        throw error;
+    } finally {
+        client.release();
+    }
 }
