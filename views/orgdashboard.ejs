@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="/css/orgdashboard.css">
 </head>
 <body>
-    <%- include("partials/orgTopNav", { active: "home", profileName: "Organizer" }) %>
+    <%- include("partials/orgTopNav", { active: "home", profileName: "Organizer", org, showLogout: true }) %>
 
     <div class="org-dashboard-layout">
         <%- include("partials/orgSidebar", { active: "home" }) %>
@@ -90,7 +90,7 @@
                                         <span class="registration-count"><%= registered %>/<%= capacity %></span>
                                     </div>
                                     <div class="progress-bar">
-                                        <div class="progress-fill" style="width: <%= registrationPercent%>%"></div>
+                                        <div class="progress-fill" data-registration-percent="<%= registrationPercent %>"></div>
                                     </div>
                                     <span class="progress-percent"><%= registrationPercent %>% capacity</span>
                                 </div>
@@ -109,10 +109,10 @@
                                         <i class="fa-solid fa-qrcode"></i>
                                         Check-in
                                     </a>
-                                    <a href="/organization/event/<%= event._id || event.id %>/delete" class="btn btn-secondary" onclick="return confirm('Are you sure you want to delete this event?');">
+                                    <button type="button" class="btn btn-secondary delete-event-btn" data-delete-url="/organization/event/<%= event._id || event.id %>/delete">
                                         <i class="fa-solid fa-trash"></i>
                                         Delete
-                                    </a>
+                                    </button>
                                 </div>
                             </div>
                         </article>
@@ -121,5 +121,100 @@
             </section>
         </main>
     </div>
+
+    <dialog id="delete-event-dialog" class="delete-event-dialog">
+        <form method="dialog" class="delete-event-dialog__panel">
+            <h3>Delete event?</h3>
+            <p>This event will be removed permanently, along with all related records.</p>
+            <div class="delete-event-dialog__actions">
+                <button type="submit" value="cancel" class="btn btn-secondary">Cancel</button>
+                <button type="button" id="confirm-delete-event" class="btn btn-primary">Delete</button>
+            </div>
+        </form>
+    </dialog>
+
+    <dialog id="delete-event-message-dialog" class="delete-event-dialog">
+        <form method="dialog" class="delete-event-dialog__panel">
+            <h3 id="delete-event-message-title">Notice</h3>
+            <p id="delete-event-message-text"></p>
+            <div class="delete-event-dialog__actions">
+                <button type="submit" class="btn btn-primary">OK</button>
+            </div>
+        </form>
+    </dialog>
+
+    <script>
+        const logoutButton = document.getElementById("org-logout-btn");
+        const deleteEventDialog = document.getElementById("delete-event-dialog");
+        const deleteEventMessageDialog = document.getElementById("delete-event-message-dialog");
+        const confirmDeleteButton = document.getElementById("confirm-delete-event");
+        const deleteEventMessageTitle = document.getElementById("delete-event-message-title");
+        const deleteEventMessageText = document.getElementById("delete-event-message-text");
+        let pendingDeleteUrl = null;
+
+        document.querySelectorAll(".progress-fill[data-registration-percent]").forEach((fill) => {
+            const percent = Number(fill.dataset.registrationPercent || 0);
+            fill.style.width = `${percent}%`;
+        });
+
+        if (logoutButton) {
+            logoutButton.addEventListener("click", async () => {
+            window.location.href = "/auth/logout";
+            });
+        }
+
+        function showMessageDialog(title, message) {
+            deleteEventMessageTitle.textContent = title;
+            deleteEventMessageText.textContent = message;
+            deleteEventMessageDialog.showModal();
+        }
+
+        document.querySelectorAll(".delete-event-btn").forEach((button) => {
+            button.addEventListener("click", () => {
+                pendingDeleteUrl = button.dataset.deleteUrl;
+                deleteEventDialog.showModal();
+            });
+        });
+
+        confirmDeleteButton.addEventListener("click", async () => {
+            if (!pendingDeleteUrl) {
+                deleteEventDialog.close();
+                return;
+            }
+
+            deleteEventDialog.close();
+
+            try {
+                const response = await fetch(pendingDeleteUrl, {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || "Failed to delete event");
+                }
+
+                window.location.href = data.redirectUrl || "/organization/dashboard";
+            } catch (error) {
+                showMessageDialog("Delete failed", error.message || "Failed to delete event");
+            } finally {
+                pendingDeleteUrl = null;
+            }
+        });
+
+        deleteEventDialog.addEventListener("close", () => {
+            pendingDeleteUrl = null;
+        });
+
+        deleteEventMessageDialog.addEventListener("close", () => {
+            deleteEventMessageTitle.textContent = "Notice";
+            deleteEventMessageText.textContent = "";
+        });
+    </script>
+
 </body>
 </html>

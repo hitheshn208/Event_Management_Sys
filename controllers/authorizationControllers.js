@@ -157,3 +157,14 @@ exports.loginOrg = async(req, res)=>{
         redirecturl: "/organization/dashboard"
     });
 }
+
+
+exports.logoutUser = (req, res)=>{
+    res.clearCookie("token",{
+        httpOnly: true,
+        secure: false,
+        sameSite: "lax",
+    });
+
+    return res.redirect("/");
+}
