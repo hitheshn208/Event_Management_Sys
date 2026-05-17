@@ -1,9 +1,10 @@
-const {checkVenue, registerEvent, addrules, addcoordinators, getEventsByOrgId, getEventInfoByid, updateEvent} = require("../models/organizerModel")
+const {checkVenue, registerEvent, addrules, addcoordinators, getEventsByOrgId, getEventInfoByid, updateEvent, deleteEvent, getOrgInfo} = require("../models/organizerModel")
 
 exports.showOrgDashboard = async (req, res)=>{
     try {
         const events = await getEventsByOrgId(req.user.id);
-        res.render("orgdashboard", {events});
+        const org = await getOrgInfo(req.user.id);
+        res.render("orgdashboard", {events, org});
     } catch (e) {
         console.log(e);
         return res.status(500).send("Internal server error");
@@ -98,6 +99,33 @@ exports.updateEvent = async (req, res) => {
 
         return res.status(200).json({
             message: "Event updated successfully",
+            redirectUrl: "/organization/dashboard"
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: error.message || "Internal server error"
+        });
+    }
+}
+
+exports.deleteEvent = async (req, res) => {
+    const eventId = req.params.code;
+    const orgId = req.user.id;
+
+    try {
+        const event = await getEventInfoByid(eventId, orgId);
+
+        if (!event) {
+            return res.status(404).json({
+                message: "Event not found"
+            });
+        }
+
+        await deleteEvent(eventId, orgId);
+
+        return res.status(200).json({
+            message: "Event deleted successfully",
             redirectUrl: "/organization/dashboard"
         });
     } catch (error) {
