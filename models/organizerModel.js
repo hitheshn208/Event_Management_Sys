@@ -190,3 +190,12 @@ exports.updateEvent = async ({ eventId, orgId, name, category, description, even
         client.release();
     }
 }
+
+exports.deleteEvent = async (eventId, orgId) => {
+    await db.query("DELETE FROM EVENT WHERE id = $1", [eventId]);
+};
+
+exports.getOrgInfo = async (orgId)=>{
+    const response = await db.query("SELECT name, email, username FROM organization where id = $1", [orgId]);
+    return response.rows[0];
+}

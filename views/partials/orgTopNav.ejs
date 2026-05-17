@@ -8,11 +8,34 @@
     </div>
 
     <div class="org-topbar-right">
-        <div class="org-profile">
+        <div class="org-profile" tabindex="0">
             <span class="avatar"><i class="fa-solid fa-user"></i></span>
             <div class="profile-text">
-                <strong><%= profileName || "Organizer" %></strong>
-                <small>Organization Panel</small>
+                <strong><%= org?.username || profileName || "Organizer" %></strong>
+                <small><%= org?.name || "Organization Panel" %></small>
+            </div>
+            <div class="org-profile-dropdown">
+                <div class="org-profile-details">
+                    <div class="org-profile-detail">
+                        <span>Name</span>
+                        <strong><%= org?.name || "Organizer" %></strong>
+                    </div>
+                    <div class="org-profile-detail">
+                        <span>Username</span>
+                        <strong><%= org?.username || profileName || "Organizer" %></strong>
+                    </div>
+                    <div class="org-profile-detail">
+                        <span>Email</span>
+                        <strong><%= org?.email || "Not available" %></strong>
+                    </div>
+                </div>
+
+                <% if (showLogout) { %>
+                    <button type="button" class="org-logout-btn" id="org-logout-btn">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        Logout
+                    </button>
+                <% } %>
             </div>
         </div>
     </div>
