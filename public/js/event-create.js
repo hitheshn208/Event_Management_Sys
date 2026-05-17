@@ -132,19 +132,19 @@ const imagePreview = document.getElementById('image-preview');
 // Drag and drop
 fileUploadArea.addEventListener('dragover', (e) => {
     e.preventDefault();
-    fileUploadArea.style.borderColor = '#ec4899';
-    fileUploadArea.style.backgroundColor = 'rgba(236, 72, 153, 0.04)';
+    fileUploadArea.style.borderColor = '#0F766E';
+    fileUploadArea.style.backgroundColor = 'rgba(20, 184, 166, 0.04)';
 });
 
 fileUploadArea.addEventListener('dragleave', () => {
-    fileUploadArea.style.borderColor = '#e0b0c8';
-    fileUploadArea.style.backgroundColor = '#fefbfd';
+    fileUploadArea.style.borderColor = '#e0f7f3';
+    fileUploadArea.style.backgroundColor = '#ffffff';
 });
 
 fileUploadArea.addEventListener('drop', (e) => {
     e.preventDefault();
-    fileUploadArea.style.borderColor = '#e0b0c8';
-    fileUploadArea.style.backgroundColor = '#fefbfd';
+    fileUploadArea.style.borderColor = '#e0f7f3';
+    fileUploadArea.style.backgroundColor = '#ffffff';
 
     const files = e.dataTransfer.files;
     uploadedFiles = Array.from(files);

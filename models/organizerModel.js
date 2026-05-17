@@ -49,7 +49,10 @@ function getCoordinatorQuery(coordinators, eventId){
 }
 
 exports.getEventsByOrgId = async(orgid)=>{
-    const response = await db.query(`SELECT  e.id, e.name, e.category, e.event_date, e.event_time, e.imgurl, r.isindividual, r.total_capacity, v.block, v.hall, COUNT(p.eventid) AS registered
+    const response = await db.query(`SELECT  e.id, e.name, e.category, e.event_date, e.event_time, e.imgurl, r.isindividual, r.total_capacity, v.block, v.hall, COUNT(DISTINCT CASE
+                WHEN r.isindividual THEN p.usn
+                ELSE p.team_name
+            END)::int AS registered
     FROM event e
     JOIN rules r 
     ON r.eventid = e.id
@@ -71,6 +74,131 @@ exports.getEventsByOrgId = async(orgid)=>{
         v.hall;`, [orgid]);
 
     return response.rows;
+}
+
+exports.getRegistrationEventsByOrgId = async (orgId) => {
+    const response = await db.query(
+        `SELECT
+            e.id,
+            e.name,
+            e.event_date,
+            e.event_time,
+            COUNT(DISTINCT CASE
+                WHEN r.isindividual THEN p.usn
+                ELSE p.team_name
+            END)::int AS total_registrations
+        FROM event e
+        JOIN rules r
+            ON r.eventid = e.id
+        LEFT JOIN participate p
+            ON p.eventid = e.id
+        WHERE e.organizerid = $1
+        GROUP BY e.id, e.name, e.event_date, e.event_time
+        ORDER BY e.event_date DESC, e.event_time DESC, e.name ASC;`,
+        [orgId]
+    );
+
+    return response.rows;
+}
+
+exports.getEventRegistrationsForOrg = async (eventId, orgId) => {
+    const eventResponse = await db.query(
+        `SELECT
+            e.id,
+            e.name,
+            e.category,
+            e.event_date,
+            e.event_time,
+            e.imgurl,
+            r.isindividual,
+            r.total_capacity,
+            r.min_members,
+            r.max_members,
+            v.block,
+            v.hall,
+            o.name AS organizer_name
+        FROM event e
+        JOIN rules r
+            ON r.eventid = e.id
+        JOIN venue v
+            ON v.id = e.venueid
+        JOIN organization o
+            ON o.id = e.organizerid
+        WHERE e.id = $1 AND e.organizerid = $2`,
+        [eventId, orgId]
+    );
+
+    const event = eventResponse.rows[0] || null;
+
+    if (!event) {
+        return null;
+    }
+
+    const totalsResponse = await db.query(
+        `SELECT
+            COUNT(DISTINCT CASE
+                WHEN r.isindividual THEN p.usn       
+                ELSE p.team_name
+            END)::int AS total_registrations
+        FROM event e
+        JOIN rules r
+            ON r.eventid = e.id
+        LEFT JOIN participate p
+            ON p.eventid = e.id
+        WHERE e.id = $1 AND e.organizerid = $2
+        GROUP BY e.id, r.isindividual`,
+        [eventId, orgId]
+    );
+
+    const totalRegistrations = totalsResponse.rows[0]?.total_registrations || 0;
+
+    if (event.isindividual) {
+        const registrationsResponse = await db.query(
+            `SELECT
+                p.usn,
+                s.name
+            FROM participate p
+            JOIN student s
+                ON s.usn = p.usn
+            WHERE p.eventid = $1
+            ORDER BY p.usn ASC`,
+            [eventId]
+        );
+
+        return {
+            event,
+            totalRegistrations,
+            registrations: registrationsResponse.rows
+        };
+    }
+
+    const registrationsResponse = await db.query(
+        `SELECT
+            p.team_name,
+            json_agg(
+                jsonb_build_object(
+                    'usn', s.usn,
+                    'name', s.name
+                )
+                ORDER BY s.name, s.usn
+            ) AS members
+        FROM participate p
+        JOIN student s
+            ON s.usn = p.usn
+        WHERE p.eventid = $1
+        GROUP BY p.team_name
+        ORDER BY p.team_name ASC`,
+        [eventId]
+    );
+
+    return {
+        event,
+        totalRegistrations,
+        registrations: registrationsResponse.rows.map((row) => ({
+            team_name: row.team_name,
+            members: Array.isArray(row.members) ? row.members : []
+        }))
+    };
 }
 
 exports.getEventInfoByid = async (eventid, orgId)=>{

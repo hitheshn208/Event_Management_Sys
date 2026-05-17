@@ -1,0 +1,402 @@
+:root {
+    --detail-bg: #f5f9ff;
+    --detail-card: #ffffff;
+    --detail-border: #d7e7ff;
+    --detail-shadow: 0 18px 40px rgba(37, 99, 235, 0.14);
+    --detail-shadow-soft: 0 10px 24px rgba(37, 99, 235, 0.08);
+}
+
+body {
+    background:
+        radial-gradient(circle at top left, rgba(37, 99, 235, 0.12), transparent 32%),
+        radial-gradient(circle at top right, rgba(59, 130, 246, 0.1), transparent 28%),
+        linear-gradient(180deg, #f8fbff 0%, var(--detail-bg) 100%);
+}
+
+.student-event-detail-main {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 28px 24px 132px;
+}
+
+.student-event-detail-shell {
+    display: grid;
+    gap: 20px;
+}
+
+.student-event-detail-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid var(--detail-border);
+    border-radius: 28px;
+    background: var(--detail-card);
+    box-shadow: var(--detail-shadow);
+}
+
+.student-event-detail-hero-media {
+    min-height: 360px;
+    background: linear-gradient(135deg, #0f2a56, #2563eb);
+}
+
+.student-event-detail-hero-media img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 360px;
+    object-fit: cover;
+}
+
+.student-event-detail-hero-copy {
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 16px;
+}
+
+.student-event-detail-headline-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+.student-event-detail-type {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #bfdbfe;
+    background: #eaf2ff;
+    color: #1d4ed8;
+    border-radius: 999px;
+    padding: 6px 11px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.student-event-detail-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    width: fit-content;
+    color: #1d4ed8;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 999px;
+    padding: 8px 12px;
+    text-decoration: none;
+    font-size: 0.86rem;
+    font-weight: 700;
+}
+
+.student-event-detail-hero-copy h2 {
+    font-size: clamp(1.8rem, 3vw, 3rem);
+    line-height: 1.08;
+    color: var(--text-main);
+}
+
+.student-event-detail-hero-copy > p {
+    color: var(--text-sub);
+    font-size: 0.98rem;
+    line-height: 1.7;
+}
+
+.student-event-detail-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.student-event-detail-summary-card,
+.student-event-detail-stat,
+.student-event-detail-info-card,
+.student-event-detail-coordinator-card,
+.student-event-detail-empty-state {
+    border: 1px solid var(--detail-border);
+    border-radius: 18px;
+    background: rgba(248, 251, 255, 0.98);
+    box-shadow: var(--detail-shadow-soft);
+}
+
+.student-event-detail-summary-card,
+.student-event-detail-stat,
+.student-event-detail-info-card,
+.student-event-detail-coordinator-card {
+    padding: 14px 16px;
+}
+
+.student-event-detail-summary-card span,
+.student-event-detail-stat span,
+.student-event-detail-info-card h4,
+.student-event-detail-footer-copy small {
+    display: block;
+    color: var(--text-sub);
+    font-size: 0.76rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 6px;
+}
+
+.student-event-detail-summary-card strong,
+.student-event-detail-stat strong,
+.student-event-detail-footer-copy span {
+    color: var(--text-main);
+    font-size: 0.95rem;
+    word-break: break-word;
+}
+
+.student-event-detail-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.9fr);
+    gap: 20px;
+}
+
+.student-event-detail-panel {
+    border: 1px solid var(--detail-border);
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: var(--detail-shadow);
+    padding: 22px;
+}
+
+.student-event-detail-panel h3 {
+    margin-bottom: 16px;
+    font-size: 1.15rem;
+    color: var(--text-main);
+}
+
+.student-event-detail-panel-primary {
+    display: grid;
+    gap: 18px;
+}
+
+.student-event-detail-description-panel {
+    grid-column: 1 / -1;
+    display: grid;
+    gap: 14px;
+}
+
+.student-event-detail-description-box {
+    border: 1px solid var(--detail-border);
+    border-radius: 18px;
+    background: rgba(248, 251, 255, 0.98);
+    box-shadow: var(--detail-shadow-soft);
+    padding: 18px;
+}
+
+.student-event-detail-description-box p {
+    color: var(--text-sub);
+    font-size: 0.96rem;
+    line-height: 1.75;
+    white-space: pre-line;
+}
+
+.student-event-detail-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.student-event-detail-stat {
+    display: grid;
+    gap: 10px;
+}
+
+.student-progress-bar {
+    width: 100%;
+    height: 9px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: #dbeafe;
+}
+
+.student-progress-fill {
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #2563eb, #3b82f6);
+    width: 0;
+}
+
+.student-event-detail-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.student-event-detail-info-card {
+    display: grid;
+    gap: 8px;
+}
+
+.student-event-detail-info-card h4 {
+    margin-bottom: 0;
+}
+
+.student-event-detail-info-card p {
+    color: var(--text-sub);
+    font-size: 0.92rem;
+    line-height: 1.55;
+}
+
+.student-event-detail-info-card strong {
+    color: var(--text-main);
+}
+
+.student-event-detail-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    width: fit-content;
+    color: #1d4ed8;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.student-event-detail-coordinator-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.student-event-detail-coordinator-card {
+    display: grid;
+    grid-template-columns: 52px minmax(0, 1fr);
+    gap: 14px;
+    align-items: start;
+}
+
+.student-event-detail-coordinator-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #dbeafe, #eff6ff);
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+}
+
+.student-event-detail-coordinator-card h4 {
+    margin: 0 0 6px;
+    color: var(--text-main);
+    font-size: 1rem;
+}
+
+.student-event-detail-coordinator-card p {
+    color: var(--text-sub);
+    font-size: 0.9rem;
+    line-height: 1.45;
+    margin-bottom: 4px;
+}
+
+.student-event-detail-coordinator-card i {
+    color: #1d4ed8;
+    width: 16px;
+}
+
+.student-event-detail-empty-state {
+    padding: 18px;
+}
+
+.student-event-detail-empty-state h4 {
+    color: var(--text-main);
+    margin-bottom: 6px;
+    font-size: 1rem;
+}
+
+.student-event-detail-empty-state p {
+    color: var(--text-sub);
+}
+
+.student-event-detail-footer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 16px 24px;
+    border-top: 1px solid var(--detail-border);
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 -8px 26px rgba(15, 42, 86, 0.08);
+}
+
+.student-event-detail-footer-copy {
+    min-width: 0;
+}
+
+.student-event-detail-footer-copy span {
+    display: block;
+    color: var(--text-main);
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.student-event-detail-footer-copy small {
+    color: var(--text-sub);
+    font-size: 0.88rem;
+    line-height: 1.5;
+}
+
+.student-event-detail-register-btn {
+    min-width: 180px;
+    justify-content: center;
+    flex: 0 0 auto;
+    border-radius: 12px;
+}
+
+.student-event-detail-register-btn:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+@media (max-width: 1100px) {
+    .student-event-detail-hero,
+    .student-event-detail-body {
+        grid-template-columns: 1fr;
+    }
+
+    .student-event-detail-summary-grid,
+    .student-event-detail-stats-grid,
+    .student-event-detail-info-grid,
+    .student-event-detail-coordinator-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .student-event-detail-hero-media,
+    .student-event-detail-hero-media img {
+        min-height: 300px;
+    }
+}
+
+@media (max-width: 860px) {
+    .student-event-detail-main {
+        padding: 20px 14px 150px;
+    }
+
+    .student-event-detail-hero-copy,
+    .student-event-detail-panel {
+        padding: 18px;
+    }
+
+    .student-event-detail-footer {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .student-event-detail-register-btn {
+        width: 100%;
+        min-width: 0;
+    }
+}

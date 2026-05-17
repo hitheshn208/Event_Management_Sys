@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= event.name %> | Event Details</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="/css/student-dashboard.css">
+    <link rel="stylesheet" href="/css/student-event-details.css">
+</head>
+<body>
+    <%- include("partials/studentTopNav", { student, profileId: userId }) %>
+
+    <main class="student-event-detail-main">
+        <%
+            const registered = Number(event.registered || 0);
+            const capacity = Number(event.total_capacity || 0);
+            const registrationPercent = capacity > 0 ? Math.min(100, Math.round((registered / capacity) * 100)) : 0;
+            const isFull = capacity > 0 && registered >= capacity;
+            const venueDisplay = String(event.hall || "").replace(/_/g, " ").toUpperCase();
+            const coordinators = Array.isArray(event.coordinators) ? event.coordinators : [];
+            const teamSizeLabel = event.isindividual ? "1 participant" : `${Number(event.min_members || 1)} to ${Number(event.max_members || 1)} members`;
+            const departmentLabel = Array.isArray(event.department_allowed)
+                ? (event.department_allowed.length > 0 ? event.department_allowed.join(", ").toUpperCase() : "All departments")
+                : (event.department_allowed ? String(event.department_allowed).replace(/,/g, ", ").toUpperCase() : "All departments");
+        %>
+
+        <section class="student-event-detail-shell">
+            <div class="student-event-detail-hero">
+                <div class="student-event-detail-hero-media">
+                    <img
+                        src="<%= event.imgurl %>"
+                        alt="<%= event.name %> banner"
+                        loading="eager"
+                        onerror="this.src='https://placehold.co/1200x720/0f3d91/dbeafe?text=Event+Image'"
+                    />
+                </div>
+
+                <div class="student-event-detail-hero-copy">
+                    <div class="student-event-detail-headline-row">
+                        <span class="student-category-tag"><%= event.category %></span>
+                        <span class="student-event-detail-type"><%= event.isindividual ? "Individual" : "Team" %></span>
+                    </div>
+
+                    <a class="student-event-detail-back-link" href="/student/dashboard">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        Back to dashboard
+                    </a>
+
+                    <h2><%= event.name %></h2>
+
+                    <div class="student-event-detail-summary-grid">
+                        <article class="student-event-detail-summary-card">
+                            <span>Organizer</span>
+                            <strong><%= event.organizer_name %></strong>
+                        </article>
+                        <article class="student-event-detail-summary-card">
+                            <span>Date</span>
+                            <strong><%= new Date(event.event_date).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }) %></strong>
+                        </article>
+                        <article class="student-event-detail-summary-card">
+                            <span>Time</span>
+                            <strong><%= new Date(`1970-01-01T${event.event_time}`).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit", hour12: true }) %></strong>
+                        </article>
+                        <article class="student-event-detail-summary-card">
+                            <span>Venue</span>
+                            <strong><%= venueDisplay %></strong>
+                        </article>
+                    </div>
+                </div>
+            </div>
+
+            <div class="student-event-detail-body">
+                <section class="student-event-detail-panel student-event-detail-panel-primary">
+                    <h3>Event Overview</h3>
+                    <div class="student-event-detail-stats-grid">
+                        <article class="student-event-detail-stat">
+                            <span>Registrations</span>
+                            <strong><%= registered %>/<%= capacity %></strong>
+                            <div class="student-progress-bar">
+                                <div class="student-progress-fill" data-progress="<%= registrationPercent %>"></div>
+                            </div>
+                        </article>
+                        <article class="student-event-detail-stat">
+                            <span>Team Size</span>
+                            <strong><%= teamSizeLabel %></strong>
+                        </article>
+                        <article class="student-event-detail-stat">
+                            <span>Department</span>
+                            <strong><%= departmentLabel %></strong>
+                        </article>
+                        <article class="student-event-detail-stat">
+                            <span>Registration Status</span>
+                            <strong><%= event.is_registered ? "Already registered" : (isFull ? "Full" : "Open") %></strong>
+                        </article>
+                    </div>
+
+                    <div class="student-event-detail-info-grid">
+                        <article class="student-event-detail-info-card">
+                            <h4>Schedule</h4>
+                            <p><strong>Date:</strong> <%= new Date(event.event_date).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }) %></p>
+                            <p><strong>Time:</strong> <%= new Date(`1970-01-01T${event.event_time}`).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit", hour12: true }) %></p>
+                        </article>
+
+                        <article class="student-event-detail-info-card">
+                            <h4>Venue</h4>
+                            <p><strong>Block:</strong> <%= event.block %></p>
+                            <p><strong>Hall:</strong> <%= venueDisplay %></p>
+                        </article>
+
+                        <article class="student-event-detail-info-card">
+                            <h4>Rules</h4>
+                            <p><strong>Mode:</strong> <%= event.isindividual ? "Individual" : "Team" %></p>
+                            <p><strong>Team limits:</strong> <%= event.isindividual ? "1 participant" : `${Number(event.min_members || 1)} to ${Number(event.max_members || 1)} members` %></p>
+                        </article>
+
+                        <article class="student-event-detail-info-card">
+                            <h4>Links</h4>
+                            <% if (event.group_chatlink) { %>
+                                <a class="student-event-detail-link" href="<%= event.group_chatlink %>" target="_blank" rel="noreferrer">
+                                    <i class="fa-solid fa-link"></i>
+                                    Open group link
+                                </a>
+                            <% } else { %>
+                                <p>No group link provided.</p>
+                            <% } %>
+                        </article>
+                    </div>
+                </section>
+
+                <section class="student-event-detail-panel">
+                    <h3>Coordinators</h3>
+                    <div class="student-event-detail-coordinator-grid">
+                        <% if (coordinators.length > 0) { %>
+                            <% coordinators.forEach((coordinator) => { %>
+                                <article class="student-event-detail-coordinator-card">
+                                    <div class="student-event-detail-coordinator-icon">
+                                        <i class="fa-solid fa-user-tie"></i>
+                                    </div>
+                                    <div>
+                                        <h4><%= coordinator.name %></h4>
+                                        <p><i class="fa-solid fa-phone"></i> <%= coordinator.phone || "Not provided" %></p>
+                                        <p><i class="fa-solid fa-envelope"></i> <%= coordinator.email || "Not provided" %></p>
+                                    </div>
+                                </article>
+                            <% }) %>
+                        <% } else { %>
+                            <article class="student-event-detail-empty-state">
+                                <h4>No coordinators listed</h4>
+                                <p>This event does not currently list coordinator contact details.</p>
+                            </article>
+                        <% } %>
+                    </div>
+                </section>
+
+                <section class="student-event-detail-panel student-event-detail-description-panel">
+                    <h3>Event Description</h3>
+                    <div class="student-event-detail-description-box">
+                        <p><%= event.description || "No description provided." %></p>
+                    </div>
+                </section>
+            </div>
+        </section>
+    </main>
+
+    <footer class="student-event-detail-footer">
+        <div class="student-event-detail-footer-copy">
+            <span><%= event.is_registered ? "You are already registered" : (isFull ? "Registration is full" : "Ready to register") %></span>
+            <small>
+                <%= event.is_registered
+                    ? "You can still review the event details and group link."
+                    : (isFull
+                        ? "This event has reached capacity."
+                        : "Proceed to the registration form when you are ready.") %>
+            </small>
+        </div>
+
+        <% if (event.is_registered || isFull) { %>
+            <button type="button" class="btn btn-primary student-event-detail-register-btn" disabled>
+                <%= event.is_registered ? "Registered" : "Full" %>
+            </button>
+        <% } else { %>
+            <a class="btn btn-primary student-event-detail-register-btn" href="/student/event/<%= event.id %>/register">
+                Register
+            </a>
+        <% } %>
+    </footer>
+
+    <script>
+        document.querySelectorAll('.student-progress-fill[data-progress]').forEach((fill) => {
+            fill.style.width = `${fill.dataset.progress}%`;
+        });
+    </script>
+</body>
+</html>

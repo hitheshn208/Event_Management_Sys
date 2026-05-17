@@ -1,0 +1,18 @@
+<aside class="student-sidebar" aria-label="Student navigation">
+    <div class="student-sidebar-brand">
+        <span class="student-sidebar-brand-icon"><i class="fa-solid fa-graduation-cap"></i></span>
+        <span class="student-sidebar-brand-text">Student Menu</span>
+    </div>
+
+    <nav class="student-sidebar-nav">
+        <a class="student-sidebar-link <%= activePage === 'home' ? 'active' : '' %>" href="/student/dashboard" aria-label="Home">
+            <i class="fa-solid fa-house"></i>
+            <span>Home</span>
+        </a>
+
+        <a class="student-sidebar-link <%= activePage === 'registrations' ? 'active' : '' %>" href="/student/registrations" aria-label="My registrations">
+            <i class="fa-solid fa-list-check"></i>
+            <span>My registrations</span>
+        </a>
+    </nav>
+</aside>

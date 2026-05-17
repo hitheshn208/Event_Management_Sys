@@ -1,0 +1,355 @@
+.org-event-registrations-main {
+    display: grid;
+    gap: 22px;
+}
+
+.org-event-registrations-hero,
+.org-event-registrations-panel {
+    border: 1px solid var(--border);
+    border-radius: 28px;
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: var(--shadow-soft);
+    overflow: hidden;
+}
+
+.org-event-registrations-hero {
+    padding: 22px;
+}
+
+.org-event-registrations-hero--overview {
+    padding-bottom: 12px;
+}
+
+.org-event-registrations-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+
+.org-event-registrations-hero-grid {
+    display: grid;
+    grid-template-columns: minmax(260px, 420px) minmax(0, 1fr);
+    gap: 22px;
+    align-items: stretch;
+}
+
+.org-event-registrations-media {
+    border-radius: 22px;
+    overflow: hidden;
+    min-height: 280px;
+    background: linear-gradient(135deg, var(--accent-soft), var(--bg-soft));
+    border: 1px solid var(--border);
+}
+
+.org-event-registrations-media img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.org-event-registrations-copy {
+    display: grid;
+    align-content: center;
+    gap: 18px;
+    padding: 8px 4px;
+}
+
+.org-event-registrations-copy--overview {
+    padding: 10px 4px 2px;
+}
+
+.org-event-registrations-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.org-event-registrations-copy h2 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1.05;
+}
+
+.org-event-registrations-copy p {
+    color: var(--text-sub);
+    font-size: 0.98rem;
+    max-width: 64ch;
+}
+
+.org-event-registrations-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.org-event-summary-card {
+    padding: 14px 16px;
+    border-radius: 18px;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+}
+
+.org-event-summary-card span,
+.org-event-registrations-progress-meta,
+.org-event-registrations-panel-head p {
+    color: var(--text-sub);
+}
+
+.org-event-summary-card span {
+    display: block;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 0.72rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.org-event-summary-card strong {
+    font-size: 1rem;
+    line-height: 1.35;
+}
+
+.org-event-registrations-list {
+    display: grid;
+    gap: 14px;
+}
+
+.org-registration-event-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 18px;
+    width: 100%;
+    padding: 18px 20px;
+    border-radius: 22px;
+    border: 1px solid var(--border);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(248, 244, 255, 0.95));
+    box-shadow: var(--shadow-soft);
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+
+.org-registration-event-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+    border-color: var(--border);
+}
+
+.org-registration-event-card__main {
+    min-width: 0;
+    display: grid;
+    gap: 8px;
+}
+
+.org-registration-event-card__eyebrow {
+    display: inline-flex;
+    width: fit-content;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--accent);
+}
+
+.org-registration-event-card__main h3 {
+    font-size: 1.12rem;
+    line-height: 1.2;
+}
+
+.org-registration-event-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    color: var(--text-sub);
+    font-size: 0.92rem;
+}
+
+.org-registration-event-card__meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.org-registration-event-card__meta i {
+    color: var(--accent);
+}
+
+.org-registration-event-card__count {
+    display: grid;
+    justify-items: end;
+    gap: 4px;
+    padding-left: 18px;
+    border-left: 1px solid var(--border);
+    min-width: 160px;
+}
+
+.org-registration-event-card__count span {
+    color: var(--text-sub);
+    font-size: 0.74rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+}
+
+.org-registration-event-card__count strong {
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--text-main);
+}
+
+.org-registration-event-card__arrow {
+    color: var(--accent);
+    opacity: 0.75;
+}
+
+.org-event-registrations-panel {
+    padding: 22px;
+}
+
+.org-event-registrations-panel-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.org-event-registrations-panel-head h3 {
+    font-size: 1.25rem;
+    margin-bottom: 4px;
+}
+
+.org-export-btn {
+    white-space: nowrap;
+}
+
+.org-event-registrations-progress-wrap {
+    display: grid;
+    gap: 10px;
+}
+
+.org-event-registrations-progress-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 0.92rem;
+}
+
+.org-event-registrations-table-wrap {
+    overflow-x: auto;
+    margin-top: 8px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: #fff;
+}
+
+.org-event-registrations-table {
+    width: 100%;
+    min-width: 680px;
+    border-collapse: collapse;
+}
+
+.org-event-registrations-table th,
+.org-event-registrations-table td {
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 1px solid #f0e9ff;
+    vertical-align: top;
+    white-space: nowrap;
+}
+
+.org-event-registrations-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: #f8f4ff;
+    color: var(--text-main);
+    font-size: 0.84rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.org-event-registrations-table tbody tr:hover {
+    background: rgba(20, 184, 166, 0.03);
+}
+
+.org-event-registrations-table--team {
+    min-width: 980px;
+}
+
+.org-event-registrations-empty {
+    padding: 28px;
+    border-radius: 22px;
+    background: var(--bg-soft);
+    border: 1px dashed var(--border);
+    text-align: center;
+}
+
+.org-event-registrations-empty h4 {
+    margin-bottom: 6px;
+}
+
+.org-event-registrations-empty p {
+    color: var(--text-sub);
+}
+
+@media (max-width: 1100px) {
+    .org-event-registrations-summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .org-event-registrations-hero-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .org-registration-event-card {
+        grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .org-registration-event-card__arrow {
+        display: none;
+    }
+}
+
+@media (max-width: 720px) {
+    .org-main-content {
+        padding: 22px 18px 28px;
+    }
+
+    .org-event-registrations-hero,
+    .org-event-registrations-panel {
+        padding: 18px;
+        border-radius: 22px;
+    }
+
+    .org-event-registrations-summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .org-event-registrations-panel-head {
+        flex-direction: column;
+    }
+
+    .org-event-registrations-progress-meta {
+        flex-direction: column;
+    }
+
+    .org-registration-event-card {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .org-registration-event-card__count {
+        justify-items: start;
+        padding-left: 0;
+        padding-top: 14px;
+        border-left: 0;
+        border-top: 1px solid #eee2ff;
+        min-width: 0;
+    }
+}

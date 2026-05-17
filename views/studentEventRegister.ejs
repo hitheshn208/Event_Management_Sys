@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Registration</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="/css/student-dashboard.css">
+    <link rel="stylesheet" href="/css/student-event-register.css">
+</head>
+<body>
+    <%- include("partials/studentTopNav", { student, profileId: userId }) %>
+
+    <main class="student-register-main">
+        <section class="student-register-card">
+            <div class="student-register-header">
+                <div>
+                    <h2>Register For <%= event.name %></h2>
+                    <p>Review event details and submit participant USN details.</p>
+                </div>
+                <a class="student-back-link" href="/student/dashboard">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Back to Dashboard
+                </a>
+            </div>
+
+            <% if (error) { %>
+                <div class="student-register-error"><%= error %></div>
+            <% } %>
+
+            <div class="student-register-event-grid">
+                <div class="student-register-event-info">
+                    <h3>Event Details</h3>
+                    <p><strong>Category:</strong> <%= event.category %></p>
+                    <p><strong>Organizer:</strong> <%= event.organizer_name %></p>
+                    <p><strong>Date:</strong> <%= new Date(event.event_date).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }) %></p>
+                    <p><strong>Time:</strong> <%= new Date(`1970-01-01T${event.event_time}`).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit", hour12: true }) %></p>
+                    <p><strong>Venue:</strong> <%= String(event.hall || "").replace(/_/g, " ").toUpperCase() %></p>
+                    <p><strong>Mode:</strong> <%= event.isindividual ? "Individual" : "Team" %></p>
+                    <% if (!event.isindividual) { %>
+                        <p><strong>Team Size:</strong> <%= Number(event.min_members || 1) %> to <%= Number(event.max_members || 1) %> members</p>
+                    <% } %>
+                    <p><strong>Description:</strong> <%= event.description || "No description provided." %></p>
+                </div>
+
+                <form method="POST" action="/student/event/<%= event.id %>/register" class="student-register-form">
+                    <h3>Participant USN Details</h3>
+                    <p class="student-register-note">
+                        <i class="fa-solid fa-circle-info"></i>
+                        All teammates must have an EventHub account.
+                    </p>
+
+                    <div class="student-register-field">
+                        <label for="teamName">
+                            Team Name
+                            <% if (!event.isindividual) { %>
+                                <span>*</span>
+                            <% } %>
+                        </label>
+                        <input
+                            id="teamName"
+                            name="teamName"
+                            type="text"
+                            maxlength="100"
+                            placeholder="Enter team name"
+                            value="<%= typeof submittedTeamName !== 'undefined' && submittedTeamName ? submittedTeamName : '' %>"
+                            <%= event.isindividual ? "" : "required" %>
+                        />
+                        <small class="student-register-hint">Leave blank for individual events.</small>
+                    </div>
+
+                    <%
+                        const minMembers = event.isindividual ? 1 : Number(event.min_members || 1);
+                        const maxMembers = event.isindividual ? 1 : Number(event.max_members || minMembers);
+                    %>
+
+                    <% for (let i = 0; i < maxMembers; i += 1) { %>
+                        <div class="student-register-field">
+                            <label for="teamUsns-<%= i %>">
+                                <%= event.isindividual ? "USN" : `Member ${i + 1} USN` %>
+                                <% if (i < minMembers) { %>
+                                    <span>*</span>
+                                <% } %>
+                            </label>
+                            <input
+                                id="teamUsns-<%= i %>"
+                                name="teamUsns"
+                                type="text"
+                                maxlength="10"
+                                placeholder="1MS22XX000"
+                                value="<%= submittedUsns && submittedUsns[i] ? submittedUsns[i] : (i === 0 ? userId : "") %>"
+                                <%= i < minMembers ? "required" : "" %>
+                            />
+                        </div>
+                    <% } %>
+
+                    <button class="student-register-submit" type="submit">
+                        <i class="fa-solid fa-user-plus"></i>
+                        Confirm Registration
+                    </button>
+                </form>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

@@ -13,12 +13,13 @@
 }
 
 :root {
-  --primary-color: #6366f1;
-  --primary-dark: #4f46e5;
-  --primary-light: #818cf8;
-  --secondary-color: #ec4899;
-  --secondary-dark: #be185d;
-  --accent-color: #6366f1;
+  --primary-color: #2563eb;
+  --primary-dark: #1d4ed8;
+  --primary-light: #60a5fa;
+  --primary-rgb: 37, 99, 235;
+  --secondary-color: #0F766E;
+  --secondary-dark: #0e6a60;
+  --accent-color: #2563eb;
   --text-primary: #202124;
   --text-secondary: #5f6368;
   --border-color: #dadce0;
@@ -27,8 +28,19 @@
   --success-color: #1e8e3e;
   --shadow-sm: 0 1px 1px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 25px -5px rgba(99, 102, 241, 0.18);
+  --shadow-lg: 0 10px 25px -5px rgba(var(--primary-rgb), 0.18);
   --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Organizer theme overrides (applies when form-container has .theme-organizer) */
+.form-container.theme-organizer {
+  --primary-color: #0F766E;
+  --primary-dark: #0e6a60;
+  --primary-light: #14B8A6;
+  --accent-color: #0F766E;
+  --accent: #0F766E;
+  --primary-rgb: 20, 184, 166;
+  --shadow-lg: 0 10px 25px -5px rgba(var(--primary-rgb), 0.18);
 }
 
 body {
@@ -172,7 +184,7 @@ body {
 .form-group input[type="email"]:focus,
 .form-group input[type="password"]:focus {
   border-color: var(--accent-color);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.14);
+  box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.14);
 }
 
 .form-group small {
@@ -246,7 +258,7 @@ body {
 
 .btn-primary:hover:not(:disabled) {
   border-color: var(--primary-dark);
-  box-shadow: 0 8px 16px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 8px 16px rgba(var(--primary-rgb), 0.3);
 }
 
 .btn-primary:active:not(:disabled) {
@@ -424,44 +436,44 @@ input::placeholder {
   }
 }
 
-/* Organizer Theme - Pink Color Scheme */
+/* Organizer Theme - Teal Color Scheme */
 .form-container.theme-organizer {
-  --accent-color: var(--secondary-color);
-  --shadow-lg: 0 10px 25px -5px rgba(236, 72, 153, 0.18);
+  --accent-color: var(--accent);
+  --shadow-lg: 0 10px 25px -5px rgba(20, 184, 166, 0.18);
 }
 
 .form-container.theme-organizer .form-group input[type="text"]:focus,
 .form-container.theme-organizer .form-group input[type="email"]:focus,
 .form-container.theme-organizer .form-group input[type="password"]:focus {
-  border-color: var(--secondary-color);
-  box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.14);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.14);
 }
 
 .form-container.theme-organizer .btn-primary {
-  background: linear-gradient(135deg, var(--secondary-color), #db2777);
+  background: linear-gradient(135deg, var(--accent), var(--primary-light));
   color: #ffffff;
-  border-color: var(--secondary-color);
+  border-color: var(--accent);
   font-weight: 600;
 }
 
 .form-container.theme-organizer .btn-primary:hover:not(:disabled) {
-  border-color: #db2777;
-  box-shadow: 0 8px 16px rgba(236, 72, 153, 0.3);
+  border-color: var(--primary-light);
+  box-shadow: 0 8px 16px rgba(20, 184, 166, 0.3);
 }
 
 .form-container.theme-organizer .btn-primary:active:not(:disabled) {
-  border-color: #db2777;
+  border-color: var(--primary-light);
   transform: translateY(1px);
 }
 
 .form-container.theme-organizer .form-group.checkbox input[type="checkbox"] {
-  accent-color: var(--secondary-color);
+  accent-color: var(--accent);
 }
 
 .form-container.theme-organizer .form-footer a {
-  color: var(--secondary-color);
+  color: var(--accent);
 }
 
 .form-container.theme-organizer .form-footer a:hover {
-  color: #db2777;
+  color: var(--primary-light);
 }
