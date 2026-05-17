@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="/css/orgdashboard.css">
 </head>
@@ -92,7 +93,7 @@
                                     <div class="progress-bar">
                                         <div class="progress-fill" data-registration-percent="<%= registrationPercent %>"></div>
                                     </div>
-                                    <span class="progress-percent"><%= registrationPercent %>% capacity</span>
+                                    <span class="progress-percent"><%= registrationPercent %>% filled</span>
                                 </div>
 
                                 <!-- Action Buttons -->
@@ -105,10 +106,10 @@
                                         <i class="fa-solid fa-list-check"></i>
                                         Registrations
                                     </a>
-                                    <a href="#" class="btn btn-secondary">
+                                    <!-- <a href="#" class="btn btn-secondary">
                                         <i class="fa-solid fa-qrcode"></i>
                                         Check-in
-                                    </a>
+                                    </a> -->
                                     <button type="button" class="btn btn-secondary delete-event-btn" data-delete-url="/organization/event/<%= event._id || event.id %>/delete">
                                         <i class="fa-solid fa-trash"></i>
                                         Delete
@@ -121,6 +122,11 @@
             </section>
         </main>
     </div>
+
+    <a class="floating-add-event-btn" href="/organization/organise-event" aria-label="Add event">
+        <i class="fa-solid fa-plus"></i>
+        <span>Add event</span>
+    </a>
 
     <dialog id="delete-event-dialog" class="delete-event-dialog">
         <form method="dialog" class="delete-event-dialog__panel">
@@ -144,7 +150,6 @@
     </dialog>
 
     <script>
-        const logoutButton = document.getElementById("org-logout-btn");
         const deleteEventDialog = document.getElementById("delete-event-dialog");
         const deleteEventMessageDialog = document.getElementById("delete-event-message-dialog");
         const confirmDeleteButton = document.getElementById("confirm-delete-event");
@@ -157,11 +162,7 @@
             fill.style.width = `${percent}%`;
         });
 
-        if (logoutButton) {
-            logoutButton.addEventListener("click", async () => {
-            window.location.href = "/auth/logout";
-            });
-        }
+
 
         function showMessageDialog(title, message) {
             deleteEventMessageTitle.textContent = title;

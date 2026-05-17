@@ -3,54 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Dashboard - Event Registration</title>
+    <title>Student Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="/css/student-dashboard.css">
-    <link rel="stylesheet" href="/home/susaki/events/public/css/student-dashboard.css">
 </head>
 <body>
-    <!-- Navigation Bar -->
-    <nav class="navbar">
-        <div class="navbar-container">
-            <!-- Left Side - Logo/Brand -->
-            <div class="navbar-left">
-                <a href="/" class="navbar-brand">
-                    <span class="brand-text">EventHub</span>
-                </a>
+    <%- include("partials/studentTopNav", { student, profileId: userId }) %>
+
+    <main class="student-dashboard-main">
+        <div class="student-dashboard-layout">
+            <%- include("partials/studentSidebar", { activePage: "home" }) %>
+
+            <section class="student-dashboard-content">
+                <section class="student-dashboard-headline">
+                    <h2>Explore Events</h2>
+                    <p>Browse upcoming events, view details, and register instantly.</p>
+                </section>
+
+                <section class="student-events-toolbar" aria-label="Event filters">
+                    <div class="student-events-filter-group">
+                        <label for="student-category-filter">Filter by category</label>
+                        <select id="student-category-filter" class="student-category-filter">
+                            <option value="all">All categories</option>
+                            <option value="conference">Conference</option>
+                            <option value="workshop">Workshop</option>
+                            <option value="seminar">Seminar</option>
+                            <option value="networking">Networking</option>
+                            <option value="training">Training</option>
+                            <option value="competition">Competition</option>
+                            <option value="hackathon">Hackathon</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </section>
+
+                <section class="student-events-grid">
+                    <% if (!events || events.length === 0) { %>
+                        <article class="student-event-card student-empty-state">
+                            <h3>No events available</h3>
+                            <p>New events will appear here as organizers publish them.</p>
+                        </article>
+                    <% } %>
+
+                    <% if (events && events.length > 0) { %>
+                        <% events.forEach((event) => { %>
+                            <%
+                                const registered = Number(event.registered || 0);
+                                const capacity = Number(event.total_capacity || 0);
+                                const registrationPercent = capacity > 0 ? Math.min(100, Math.round((registered / capacity) * 100)) : 0;
+                                const isFull = capacity > 0 && registered >= capacity;
+                                const normalizedCategory = String(event.category || "").trim().toLowerCase();
+                            %>
+                            <article class="student-event-card" data-event-card data-category="<%= normalizedCategory %>">
+                                <div class="student-event-image-wrap">
+                                    <img src="<%= event.imgurl %>" alt="<%= event.name %> banner" loading="lazy" onerror="this.src='https://placehold.co/600x300/0f3d91/dbeafe?text=Event+Image'" />
+                                </div>
+
+                                <div class="student-event-body">
+                                    <div class="student-event-header">
+                                        <div>
+                                            <h3><%= event.name %></h3>
+                                            <span class="student-category-tag"><%= event.category %></span>
+                                        </div>
+                                        <span class="student-event-type"><%= event.isindividual ? "Individual" : "Team" %></span>
+                                    </div>
+
+                                    <div class="student-event-meta-grid">
+                                        <div class="student-meta-item">
+                                            <i class="fa-solid fa-calendar-days"></i>
+                                            <span><%= new Date(event.event_date).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }) %></span>
+                                        </div>
+                                        <div class="student-meta-item">
+                                            <i class="fa-solid fa-clock"></i>
+                                            <span><%= new Date(`1970-01-01T${event.event_time}`).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit", hour12: true }) %></span>
+                                        </div>
+                                        <div class="student-meta-item">
+                                            <i class="fa-solid fa-location-dot"></i>
+                                            <span><%= String(event.hall || "").replace(/_/g, " ").toUpperCase() %></span>
+                                        </div>
+                                        <div class="student-meta-item">
+                                            <i class="fa-solid fa-user-group"></i>
+                                            <span><%= event.organizer_name %></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="student-registration-section">
+                                        <div class="student-registration-header">
+                                            <span>Registrations</span>
+                                            <span><%= registered %>/<%= capacity %></span>
+                                        </div>
+                                        <div class="student-progress-bar">
+                                            <div class="student-progress-fill" data-registration-percent="<%= registrationPercent %>"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="student-card-actions">
+                                        <a
+                                            class="btn btn-secondary student-detail-btn"
+                                            href="/student/event/<%= event.id %>">
+                                            <i class="fa-solid fa-circle-info"></i>
+                                            Details
+                                        </a>
+
+                                        <% if (event.is_registered || isFull) { %>
+                                            <button
+                                                type="button"
+                                                class="btn btn-primary student-register-btn"
+                                                disabled>
+                                                <i class="fa-solid fa-user-plus"></i>
+                                                <%= event.is_registered ? "Registered" : "Full" %>
+                                            </button>
+                                        <% } else { %>
+                                            <a
+                                                class="btn btn-primary student-register-btn"
+                                                href="/student/event/<%= event.id %>/register">
+                                                <i class="fa-solid fa-user-plus"></i>
+                                                Register
+                                            </a>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </article>
+                        <% }) %>
+                    <% } %>
+
+                    <article class="student-event-card student-empty-state student-filter-empty-state" hidden data-filter-empty-state>
+                        <h3>No matching events</h3>
+                        <p>Try a different category or switch back to all categories.</p>
+                    </article>
+                </section>
+            </section>
+        </div>
+    </main>
+
+    <dialog id="student-message-dialog" class="student-dialog">
+        <form method="dialog" class="student-dialog-panel">
+            <h3 id="student-message-title">Notice</h3>
+            <p id="student-message-text"></p>
+            <div class="student-dialog-actions">
+                <button type="submit" class="btn btn-primary">OK</button>
             </div>
+        </form>
+    </dialog>
 
-            <!-- Right Side - Profile & Logout -->
-            <div class="navbar-right">
-                <button class="btn btn-nav btn-profile" onclick="window.location.href='/student-profile'" title="Go to profile">
-                    Profile
-                </button>
-                <button class="btn btn-nav btn-logout" onclick="handleLogout()" title="Logout">
-                    Logout
-                </button>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Main Container -->
-    <div class="dashboard-container">
-        <div class="welcome-section">
-            <h1>Welcome!</h1>
-            <p>Your registered events are displayed below</p>
-        </div>
-
-        <!-- Events Section -->
-        <div class="events-section">
-            <div class="events-grid" id="eventsGrid">
-            </div>
-        </div>
-
-        <!-- Empty State -->
-        <div class="empty-state" id="emptyState" style="display: none;">
-            <h2>You haven't registered for any event</h2>
-        </div>
-    </div>
-
-    <!-- Scripts -->
     <script src="/js/student-dashboard.js"></script>
-    <script src="home/susaki/events/public/js/student-dashboard.js"></script>
 </body>
 </html>
