@@ -146,6 +146,7 @@ exports.loginOrg = async(req, res)=>{
             });
         }
     }catch(e){
+        console.log(e);
         return res.status(500).json({
             message : "Internal server error"
         })
@@ -155,4 +156,15 @@ exports.loginOrg = async(req, res)=>{
         message: "Login successful",
         redirecturl: "/organization/dashboard"
     });
+}
+
+
+exports.logoutUser = (req, res)=>{
+    res.clearCookie("token",{
+        httpOnly: true,
+        secure: false,
+        sameSite: "lax",
+    });
+
+    return res.redirect("/");
 }

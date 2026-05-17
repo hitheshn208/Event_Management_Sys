@@ -1,0 +1,42 @@
+<header class="org-topbar">
+    <div class="org-topbar-left">
+        <span class="org-logo-icon"><i class="fa-solid fa-sparkles"></i></span>
+        <div class="org-brand-wrap">
+            <h1>Your Hosted Events</h1>
+            <p>Manage details and registrations for all your events from one place.</p>
+        </div>
+    </div>
+
+    <div class="org-topbar-right">
+        <div class="org-profile" tabindex="0">
+            <span class="avatar"><i class="fa-solid fa-user"></i></span>
+            <div class="profile-text">
+                <strong><%= org?.username || profileName || "Organizer" %></strong>
+                <small><%= org?.name || "Organization Panel" %></small>
+            </div>
+            <div class="org-profile-dropdown">
+                <div class="org-profile-details">
+                    <div class="org-profile-detail">
+                        <span>Name</span>
+                        <strong><%= org?.name || "Organizer" %></strong>
+                    </div>
+                    <div class="org-profile-detail">
+                        <span>Username</span>
+                        <strong><%= org?.username || profileName || "Organizer" %></strong>
+                    </div>
+                    <div class="org-profile-detail">
+                        <span>Email</span>
+                        <strong><%= org?.email || "Not available" %></strong>
+                    </div>
+                </div>
+
+                <% if (showLogout) { %>
+                    <button type="button" class="org-logout-btn" id="org-logout-btn">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        Logout
+                    </button>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</header>

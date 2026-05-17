@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Event - EventHub</title>
+    <link rel="stylesheet" href="/css/event-create.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="navbar">
+        <a href="/organization/dashboard" class="back-btn">← Back to Dashboard</a>
+        <div id="scroll-progress" class="scroll-progress" aria-hidden="true"></div>
+    </div>
+
+    <div class="page-container">
+        <div class="form-header">
+            <h1>Create New Event</h1>
+            <p>Organize and manage your university event</p>
+        </div>
+
+        <div id="error-message" class="error-message" aria-live="polite" style="display: none;"></div>
+        <div id="success-message" class="success-message" aria-live="polite" style="display: none;"></div>
+
+        <form id="event-form" class="event-form" data-mode="create" data-submit-url="/organization/organise-event">
+            
+            <!-- BASIC INFORMATION SECTION -->
+            <section class="form-section">
+                <h2>Basic Information</h2>
+                
+                <div class="form-group">
+                    <label for="eventName">Event Name <span style="color: red">*</span></label>
+                    <input type="text" id="eventName" name="eventName" required placeholder="Enter event name">
+                </div>
+
+                <div class="form-group">
+                    <label for="eventCategory">Category <span style="color: red">*</span></label>
+                    <select id="eventCategory" name="eventCategory" required>
+                        <option value="">Select a category</option>
+                        <option value="conference">Conference</option>
+                        <option value="workshop">Workshop</option>
+                        <option value="seminar">Seminar</option>
+                        <option value="networking">Networking</option>
+                        <option value="training">Training</option>
+                        <option value="competition">Competition</option>
+                        <option value="hackathon">Hackathon</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="eventDescription">Description <span style="color: red">*</span></label>
+                    <textarea id="eventDescription" name="eventDescription" required placeholder="Enter event description" rows="4"></textarea>
+                </div>
+            </section>
+
+            <!-- DATE & TIME SECTION -->
+            <section class="form-section">
+                <h2>Date & Time</h2>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="eventDate">Event Date <span style="color: red">*</span></label>
+                        <input type="date" id="eventDate" name="eventDate" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="eventTime">Event Time (IST) <span style="color: red">*</span></label>
+                        <input type="time" id="eventTime" name="eventTime" required>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VENUE SECTION -->
+            <section class="form-section">
+                <h2>Venue Information</h2>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="eventBlock">Block <span style="color: red">*</span></label>
+                        <select id="eventBlock" name="eventBlock" required onchange="updateHalls()">
+                            <option value="">Select a block</option>
+                            <option value="esb">Block 1 - ESB</option>
+                            <option value="des">Block 2 - DES</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="eventHall">Hall <span style="color: red">*</span></label>
+                        <select id="eventHall" name="eventHall" required>
+                            <option value="">Select a hall</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <!-- GROUP CHAT SECTION -->
+            <section class="form-section">
+                <h2>Group Chat</h2>
+
+                <div class="form-group">
+                    <label for="groupChatLink">WhatsApp Group Link</label>
+                    <input type="url" id="groupChatLink" name="groupChatLink" placeholder="https://chat.whatsapp.com/...">
+                </div>
+            </section>
+
+            <!-- EVENT TYPE SECTION -->
+            <section class="form-section">
+                <h2>Event Type</h2>
+
+                <div class="form-group">
+                    <label>Event Format <span style="color: red">*</span></label>
+                    <div class="radio-group">
+                        <input type="radio" id="eventTypeIndividual" class="radio-input" name="eventType" value="individual" required onchange="toggleEventTypeFields()">
+                        <label class="radio-option card-option" for="eventTypeIndividual">
+                            <span class="option-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" role="presentation">
+                                    <circle cx="12" cy="8" r="3.5"></circle>
+                                    <path d="M6 20v-1.2c0-3.1 2.7-5.6 6-5.6s6 2.5 6 5.6V20"></path>
+                                </svg>
+                            </span>
+                            <span class="option-content">
+                                <span class="option-title">Individual Participants</span>
+                                <span class="option-description">Students register separately</span>
+                            </span>
+                        </label>
+
+                        <input type="radio" id="eventTypeTeam" class="radio-input" name="eventType" value="team" required onchange="toggleEventTypeFields()">
+                        <label class="radio-option card-option" for="eventTypeTeam">
+                            <span class="option-icon team-icon" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="M0-240v-63q0-43 44-70t116-27q13 0 25 .5t23 2.5q-14 21-21 44t-7 48v65H0Zm240 0v-65q0-32 17.5-58.5T307-410q32-20 76.5-30t96.5-10q53 0 97.5 10t76.5 30q32 20 49 46.5t17 58.5v65H240Zm540 0v-65q0-26-6.5-49T754-397q11-2 22.5-2.5t23.5-.5q72 0 116 26.5t44 70.5v63H780Zm-455-80h311q-10-20-55.5-35T480-370q-55 0-100.5 15T325-320ZM160-440q-33 0-56.5-23.5T80-520q0-34 23.5-57t56.5-23q34 0 57 23t23 57q0 33-23 56.5T160-440Zm640 0q-33 0-56.5-23.5T720-520q0-34 23.5-57t56.5-23q34 0 57 23t23 57q0 33-23 56.5T800-440Zm-320-40q-50 0-85-35t-35-85q0-51 35-85.5t85-34.5q51 0 85.5 34.5T600-600q0 50-34.5 85T480-480Zm0-80q17 0 28.5-11.5T520-600q0-17-11.5-28.5T480-640q-17 0-28.5 11.5T440-600q0 17 11.5 28.5T480-560Zm1 240Zm-1-280Z"/>
+                                </svg>
+                            </span>
+                            <span class="option-content">
+                                <span class="option-title">Team Based</span>
+                                <span class="option-description">Students register as a group</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Individual Fields -->
+                <div id="individual-fields" class="event-type-fields" style="display: none;">
+                    <div class="form-group">
+                        <label for="totalCapacity">Total Capacity (Students) <span style="color: red">*</span></label>
+                        <input type="number" id="totalCapacity" name="totalCapacity" min="1" placeholder="Number of students">
+                    </div>
+                </div>
+
+                <!-- Team Fields -->
+                <div id="team-fields" class="event-type-fields" style="display: none;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="minTeamSize">Minimum Team Size <span style="color: red">*</span></label>
+                            <input type="number" id="minTeamSize" name="minTeamSize" min="1" placeholder="Minimum members">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="maxTeamSize">Maximum Team Size <span style="color: red">*</span></label>
+                            <input type="number" id="maxTeamSize" name="maxTeamSize" min="1" placeholder="Maximum members">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="totalTeams">Total Capacity (Teams) <span style="color: red">*</span></label>
+                        <input type="number" id="totalTeams" name="totalTeams" min="1" placeholder="Expected number of teams">
+                    </div>
+                </div>
+            </section>
+
+            <!-- CUSTOM INSTRUCTION SECTION -->
+            <section class="form-section">
+                <h2>Custom Instruction</h2>
+
+                <div class="form-group">
+                    <label for="departmentRestriction">Department Restriction</label>
+                    <select id="departmentRestriction" name="departmentRestriction">
+                        <option value="">No Restriction - All Departments</option>
+                        <option value="cse">CSE</option>
+                        <option value="ise">ISE</option>
+                        <option value="aiml">AIML</option>
+                        <option value="aids">AIDS</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="eventInstructions">Instructions</label>
+                    <textarea id="eventInstructions" name="eventInstructions" rows="4" placeholder="Add any special instructions for participants"></textarea>
+                </div>
+            </section>
+
+            <!-- COORDINATORS SECTION -->
+            <section class="form-section">
+                <div class="section-header">
+                    <h2>Event Coordinators</h2>
+                    <button type="button" class="add-coordinator-btn" onclick="addCoordinator(event)">+</button>
+                </div>
+
+                <div id="coordinators-container">
+                    <div class="coordinator-card" data-coordinator-id="0">
+                        <div class="coordinator-header">
+                            <h3>Coordinator 1</h3>
+                            <button type="button" class="remove-btn" onclick="removeCoordinator(event, 0)" style="display: none;">Remove</button>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="coordinatorName-0">Name <span style="color: red">*</span></label>
+                                <input type="text" id="coordinatorName-0" class="coordinator-name" placeholder="Full name">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="coordinatorEmail-0">Email <span style="color: red">*</span></label>
+                                <input type="email" id="coordinatorEmail-0" class="coordinator-email" placeholder="email@example.com">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="coordinatorPhone-0">Phone Number <span style="color: red">*</span></label>
+                            <input type="tel" id="coordinatorPhone-0" class="coordinator-phone" placeholder="+91 XXXXX XXXXX">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- IMAGE UPLOAD SECTION -->
+            <section class="form-section">
+                <h2>Event Brochure (Photos)</h2>
+
+                <div class="file-upload-area" id="fileUploadArea">
+                    <input type="file" id="eventPhotos" name="image" accept="image/*">
+                    <div class="file-upload-text">
+                        <p>Click to upload or drag and drop</p>
+                        <span>PNG, JPG up to 10MB</span>
+                    </div>
+                </div>
+                <div id="file-list" class="file-list"></div>
+                <div id="image-preview" class="image-preview"></div>
+            </section>
+
+            <!-- Submit Button -->
+            <div class="form-actions">
+                <a href="/organization/dashboard" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Create Event</button>
+            </div>
+
+        </form>
+    </div>
+
+    <script src="/js/event-create.js"></script>
+</body>
+</html>
