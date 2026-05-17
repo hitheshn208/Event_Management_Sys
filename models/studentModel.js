@@ -241,9 +241,20 @@ exports.getRegisteredEventsForStudent = async (usn) => {
 
 exports.cancelStudentRegistration = async (eventId, usn) => {
     const response = await db.query(
-        `DELETE FROM participate
-         WHERE eventid = $1 AND usn = $2
-         RETURNING eventid`,
+        `WITH registration AS (
+            SELECT team_name
+            FROM participate
+            WHERE eventid = $1 AND usn = $2
+            LIMIT 1
+        )
+        DELETE FROM participate p
+        USING registration r
+        WHERE p.eventid = $1
+          AND (
+              (r.team_name IS NULL AND p.usn = $2)
+              OR (r.team_name IS NOT NULL AND p.team_name = r.team_name)
+          )
+        RETURNING p.eventid`,
         [eventId, usn]
     );
 
