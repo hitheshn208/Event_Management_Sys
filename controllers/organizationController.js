@@ -1,4 +1,4 @@
-const {checkVenue, registerEvent, addrules, addcoordinators, getEventsByOrgId, getEventInfoByid, updateEvent, deleteEvent, getOrgInfo} = require("../models/organizerModel")
+const {checkVenue, registerEvent, addrules, addcoordinators, getEventsByOrgId, getRegistrationEventsByOrgId, getEventRegistrationsForOrg, getEventInfoByid, updateEvent, deleteEvent, getOrgInfo} = require("../models/organizerModel")
 
 exports.showOrgDashboard = async (req, res)=>{
     try {
@@ -11,9 +11,61 @@ exports.showOrgDashboard = async (req, res)=>{
     }
 }
 
+exports.showAllEventRegistrationsPage = async (req, res) => {
+    try {
+        const [org, events] = await Promise.all([
+            getOrgInfo(req.user.id),
+            getRegistrationEventsByOrgId(req.user.id)
+        ]);
+
+        return res.render("orgEventRegistrations", {
+            org,
+            events,
+            registrationsViewMode: "all"
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send("Internal server error");
+    }
+};
+
 exports.showOrganiseEvent = (req, res)=>{
     res.render("eventregistration");
 }
+
+exports.showEventRegistrationsPage = async (req, res) => {
+    const orgId = req.user.id;
+    const eventId = req.params.eventId;
+
+    try {
+        const [org, eventData] = await Promise.all([
+            getOrgInfo(orgId),
+            getEventRegistrationsForOrg(eventId, orgId)
+        ]);
+
+        if (!eventData) {
+            return res.status(404).send("Event not found");
+        }
+
+        const capacity = Number(eventData.event.total_capacity || 0);
+        const registrationPercent = capacity > 0
+            ? Math.min(100, Math.round((eventData.totalRegistrations / capacity) * 100))
+            : 0;
+
+        return res.render("orgEventRegistrations", {
+            org,
+            event: eventData.event,
+            registrations: eventData.registrations,
+            totalRegistrations: eventData.totalRegistrations,
+            capacity,
+            registrationPercent,
+            registrationsViewMode: "single"
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send("Internal server error");
+    }
+};
 
 exports.createEvent = async (req, res)=>{
     const {eventName, category, description, date, time, block, hall, groupChatLink, departmentRestriction, eventInstructions, eventType, coordinators} = JSON.parse(req.body.data);    

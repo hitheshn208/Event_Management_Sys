@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= registrationsViewMode === "all" ? "All Registrations" : `${event.name} | Registrations` %></title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="/css/orgdashboard.css">
+    <link rel="stylesheet" href="/css/org-event-registrations.css">
+</head>
+<body>
+    <%
+        const isOverview = registrationsViewMode === "all";
+        let csvFileName = "";
+    %>
+
+    <%- include("partials/orgTopNav", { active: isOverview ? "registrations" : "event-registrations", profileName: "Organizer", org, showLogout: true }) %>
+
+    <div class="org-dashboard-layout">
+        <%- include("partials/orgSidebar", { active: isOverview ? "registrations" : "event-registrations" }) %>
+
+        <main class="org-main-content org-event-registrations-main">
+            <% if (isOverview) { %>
+                <section class="org-event-registrations-hero org-event-registrations-hero--overview">
+                    <div class="org-event-registrations-copy org-event-registrations-copy--overview">
+                        <div class="org-event-registrations-pills">
+                            <span class="category-tag">All events</span>
+                            <span class="status-badge status-upcoming"><%= events.length %> events</span>
+                        </div>
+                        <h2>Registrations overview</h2>
+                        <p>Select an event to open its full registrations page.</p>
+                    </div>
+                </section>
+
+                <section class="org-event-registrations-panel">
+                    <% if (!events || events.length === 0) { %>
+                        <article class="org-event-registrations-empty">
+                            <h4>No events yet</h4>
+                            <p>Once you host events, their registration cards will appear here.</p>
+                            <a class="btn btn-primary" href="/organization/organise-event">Host Event</a>
+                        </article>
+                    <% } else { %>
+                        <div class="org-event-registrations-list">
+                            <% events.forEach((event) => { %>
+                                <%
+                                    const dateLabel = new Date(event.event_date).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+                                    const timeLabel = new Date(`1970-01-01T${event.event_time}`).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit", hour12: true });
+                                %>
+                                <a class="org-registration-event-card" href="/organization/event/<%= event.id %>/registrations">
+                                    <div class="org-registration-event-card__main">
+                                        <span class="org-registration-event-card__eyebrow">Event</span>
+                                        <h3><%= event.name %></h3>
+                                        <div class="org-registration-event-card__meta">
+                                            <span><i class="fa-solid fa-calendar-days"></i> <%= dateLabel %></span>
+                                            <span><i class="fa-solid fa-clock"></i> <%= timeLabel %></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="org-registration-event-card__count">
+                                        <span>Total registrations</span>
+                                        <strong><%= event.total_registrations %></strong>
+                                    </div>
+
+                                    <i class="fa-solid fa-chevron-right org-registration-event-card__arrow"></i>
+                                </a>
+                            <% }) %>
+                        </div>
+                    <% } %>
+                </section>
+            <% } else { %>
+                <%
+                    const venueDisplay = String(event.hall || "").replace(/_/g, " ").toUpperCase();
+                    const teamSlots = event.isindividual ? 0 : Math.max(Number(event.max_members || 0), registrations.reduce((max, registration) => Math.max(max, Array.isArray(registration.members) ? registration.members.length : 0), 0));
+                    const dateLabel = new Date(event.event_date).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+                    const timeLabel = new Date(`1970-01-01T${event.event_time}`).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit", hour12: true });
+                    csvFileName = `${String(event.name || "event").replace(/[^a-zA-Z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "event"}-registrations.csv`;
+                %>
+
+                <section class="org-event-registrations-hero">
+                    <a class="org-event-registrations-back" href="/organization/registrations">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        Back to registrations
+                    </a>
+
+                    <div class="org-event-registrations-hero-grid">
+                        <div class="org-event-registrations-media">
+                            <img src="<%= event.imgurl %>" alt="<%= event.name %> banner" onerror="this.src='https://placehold.co/1200x720/7c3aed/ffffff?text=Event+Image'" />
+                        </div>
+
+                        <div class="org-event-registrations-copy">
+                            <div class="org-event-registrations-pills">
+                                <span class="category-tag"><%= event.category %></span>
+                                <span class="status-badge status-upcoming"><%= event.isindividual ? "Individual" : "Team Event" %></span>
+                            </div>
+                            <h2><%= event.name %></h2>
+                            <p>Review who registered, track the team distribution, and export the table when you need a spreadsheet copy.</p>
+
+                            <div class="org-event-registrations-summary-grid">
+                                <article class="org-event-summary-card">
+                                    <span>Date</span>
+                                    <strong><%= dateLabel %></strong>
+                                </article>
+                                <article class="org-event-summary-card">
+                                    <span>Time</span>
+                                    <strong><%= timeLabel %></strong>
+                                </article>
+                                <article class="org-event-summary-card">
+                                    <span>Venue</span>
+                                    <strong><%= venueDisplay %></strong>
+                                </article>
+                                <article class="org-event-summary-card">
+                                    <span>Registrations</span>
+                                    <strong><%= totalRegistrations %></strong>
+                                </article>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="org-event-registrations-panel">
+                    <div class="org-event-registrations-panel-head">
+                        <div>
+                            <h3>Registration progress</h3>
+                            <p><%= totalRegistrations %> <%= event.isindividual ? "students" : "teams" %> registered out of <%= capacity %> capacity.</p>
+                        </div>
+
+                        <button type="button" class="btn btn-secondary org-export-btn" id="download-registrations-csv" <%= registrations.length === 0 ? "disabled" : "" %>>
+                            <i class="fa-solid fa-download"></i>
+                            Download CSV
+                        </button>
+                    </div>
+
+                    <div class="org-event-registrations-progress-wrap">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: <%= registrationPercent %>%"></div>
+                        </div>
+                        <div class="org-event-registrations-progress-meta">
+                            <span><%= registrationPercent %>% filled</span>
+                            <span><%= totalRegistrations %> / <%= capacity %></span>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="org-event-registrations-panel">
+                    <div class="org-event-registrations-panel-head">
+                        <div>
+                            <h3>Registered <%= event.isindividual ? "students" : "teams" %></h3>
+                            <p><%= event.isindividual ? "Each row is one student registration." : "Each row is one team with its teammate details." %></p>
+                        </div>
+                    </div>
+
+                    <% if (!registrations || registrations.length === 0) { %>
+                        <article class="org-event-registrations-empty">
+                            <h4>No registrations yet</h4>
+                            <p>Once students register, their details will appear here.</p>
+                        </article>
+                    <% } else if (event.isindividual) { %>
+                        <div class="org-event-registrations-table-wrap">
+                            <table class="org-event-registrations-table" id="registrations-table">
+                                <thead>
+                                    <tr>
+                                        <th>USN</th>
+                                        <th>Name</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% registrations.forEach((registration) => { %>
+                                        <tr>
+                                            <td><%= registration.usn %></td>
+                                            <td><%= registration.name %></td>
+                                        </tr>
+                                    <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+                    <% } else { %>
+                        <div class="org-event-registrations-table-wrap">
+                            <table class="org-event-registrations-table org-event-registrations-table--team" id="registrations-table">
+                                <thead>
+                                    <tr>
+                                        <th>Team name</th>
+                                        <% for (let index = 0; index < teamSlots; index += 1) { %>
+                                            <th><%= ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th"][index] || `${index + 1}th` %> teammate USN</th>
+                                            <th><%= ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th"][index] || `${index + 1}th` %> teammate name</th>
+                                        <% } %>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% registrations.forEach((registration) => { %>
+                                        <tr>
+                                            <td><%= registration.team_name || "Untitled team" %></td>
+                                            <% for (let index = 0; index < teamSlots; index += 1) { %>
+                                                <td><%= registration.members && registration.members[index] ? registration.members[index].usn : "" %></td>
+                                                <td><%= registration.members && registration.members[index] ? registration.members[index].name : "" %></td>
+                                            <% } %>
+                                        </tr>
+                                    <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+                    <% } %>
+                </section>
+            <% } %>
+        </main>
+    </div>
+
+    <% if (!isOverview) { %>
+    <script>
+        const csvButton = document.getElementById("download-registrations-csv");
+
+        function escapeCsvValue(value) {
+            const normalized = String(value ?? "").replace(/"/g, '""');
+            return /[",\n\r]/.test(normalized) ? `"${normalized}"` : normalized;
+        }
+
+        function tableToCsv(table) {
+            return Array.from(table.querySelectorAll("tr"))
+                .map((row) => Array.from(row.querySelectorAll("th, td"))
+                    .map((cell) => escapeCsvValue(cell.textContent.trim()))
+                    .join(","))
+                .join("\r\n");
+        }
+
+        if (csvButton) {
+            csvButton.addEventListener("click", () => {
+                const table = document.getElementById("registrations-table");
+                if (!table) {
+                    return;
+                }
+
+                const csvContent = tableToCsv(table);
+                const blob = new Blob(["\ufeff" + csvContent], { type: "text/csv;charset=utf-8;" });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.href = url;
+                link.download = "<%= csvFileName %>";
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                URL.revokeObjectURL(url);
+            });
+        }
+    </script>
+    <% } %>
+</body>
+</html>

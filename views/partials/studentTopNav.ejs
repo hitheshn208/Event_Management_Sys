@@ -1,0 +1,40 @@
+<header class="student-topbar">
+    <div class="student-topbar-left">
+        <span class="student-logo-icon"><i class="fa-solid fa-graduation-cap"></i></span>
+        <div class="student-brand-wrap">
+            <h1>Student Dashboard</h1>
+            <p>Discover events and register in one place.</p>
+        </div>
+    </div>
+
+    <div class="student-topbar-right">
+        <div class="student-profile" tabindex="0">
+            <span class="student-avatar"><i class="fa-solid fa-user"></i></span>
+            <div class="student-profile-text">
+                <strong><%= student?.name || "Student" %></strong>
+                <small><%= student?.usn || profileId || "" %></small>
+            </div>
+            <div class="student-profile-dropdown">
+                <div class="student-profile-details">
+                    <div class="student-profile-detail">
+                        <span>Name</span>
+                        <strong><%= student?.name || "Student" %></strong>
+                    </div>
+                    <div class="student-profile-detail">
+                        <span>USN</span>
+                        <strong><%= student?.usn || profileId || "Not available" %></strong>
+                    </div>
+                    <div class="student-profile-detail">
+                        <span>Email</span>
+                        <strong><%= student?.email || "Not available" %></strong>
+                    </div>
+                </div>
+
+                <button type="button" class="student-logout-btn" id="student-logout-btn">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    Logout
+                </button>
+            </div>
+        </div>
+    </div>
+</header>

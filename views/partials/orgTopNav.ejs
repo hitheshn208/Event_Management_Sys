@@ -1,6 +1,6 @@
 <header class="org-topbar">
     <div class="org-topbar-left">
-        <span class="org-logo-icon"><i class="fa-solid fa-sparkles"></i></span>
+        <span class="org-logo-icon"><i class="fa-solid fa-user-group" ></i></span>
         <div class="org-brand-wrap">
             <h1>Your Hosted Events</h1>
             <p>Manage details and registrations for all your events from one place.</p>
@@ -11,8 +11,8 @@
         <div class="org-profile" tabindex="0">
             <span class="avatar"><i class="fa-solid fa-user"></i></span>
             <div class="profile-text">
-                <strong><%= org?.username || profileName || "Organizer" %></strong>
-                <small><%= org?.name || "Organization Panel" %></small>
+                <strong><%= org?.name || "Organization Panel" %></strong>
+                <small><%= org?.username || profileName || "Organizer" %></small>
             </div>
             <div class="org-profile-dropdown">
                 <div class="org-profile-details">
@@ -40,3 +40,4 @@
         </div>
     </div>
 </header>
+<script src="/js/orgTopNav.js"></script>
