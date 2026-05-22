@@ -1,12 +1,14 @@
 services:
   app:
-    image: app:latest
+    image: emanager:latest
     container_name: emanager
     build:
       context: .
       dockerfile: Dockerfile
       target: base
-    environment_file: .env
+    env_file: .env
+    environment:
+      - NODE_ENV=production
     ports:
       - ${PORT}:${PORT}
     volumes:
