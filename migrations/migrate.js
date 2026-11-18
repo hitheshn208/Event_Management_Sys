@@ -4,12 +4,14 @@
 
 const fs = require("fs");
 const path = require("path");
-const pool = require("../config/database");
+const Database = require("../core/Database");
+
+const db = Database.getInstance();
 
 const SQL_DIR = path.join(__dirname, "sql");
 
 async function migrate() {
-    const client = await pool.connect();
+    const client = await db.connect();
 
     try {
         await client.query(`
@@ -54,7 +56,7 @@ async function migrate() {
         console.log(`Done. ${pending.length} migration(s) applied.`);
     } finally {
         client.release();
-        await pool.end();
+        await db.end();
     }
 }
 

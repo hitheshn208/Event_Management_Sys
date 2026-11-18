@@ -1,13 +1,14 @@
 const express = require("express");
-const { getCurrentUser, logoutUser, registerStudent, loginStudent, registerOrg, loginOrg } = require("../controllers/authorizationControllers");
-const authRouter = express.Router();
 
-authRouter.get("/me", getCurrentUser);
+module.exports = function authRoutes({ authController: c }) {
+    const router = express.Router();
 
-authRouter.post("/student-login", loginStudent);
-authRouter.post("/organizer-login", loginOrg);
-authRouter.post("/student-register", registerStudent);
-authRouter.post("/organizer-register", registerOrg);
-authRouter.post("/logout", logoutUser);
+    router.get("/me", c.me);
+    router.post("/student-login", c.loginStudent);
+    router.post("/student-register", c.registerStudent);
+    router.post("/organizer-login", c.loginOrganization);
+    router.post("/organizer-register", c.registerOrganization);
+    router.post("/logout", c.logout);
 
-module.exports = authRouter;
+    return router;
+};

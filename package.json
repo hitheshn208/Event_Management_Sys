@@ -7,7 +7,7 @@
   "type": "commonjs",
   "main": "app.js",
   "scripts": {
-    "dev": "nodemon --watch app.js --watch controllers --watch routes --watch models --watch middleware --watch utils --watch config app.js",
+    "dev": "nodemon --ignore frontend/ --ignore public/ --ignore migrations/ app.js",
     "start": "node app.js",
     "migrate": "node migrations/migrate.js",
     "client": "npm --prefix frontend run dev",

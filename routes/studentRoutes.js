@@ -1,18 +1,13 @@
 const express = require("express");
-const {
-	getDashboard,
-	getMyRegistrations,
-	getEventDetails,
-	registerForEvent,
-	cancelRegistration
-} = require("../controllers/studentController");
 
-const studentRouter = express.Router();
+module.exports = function studentRoutes({ studentController: c }) {
+    const router = express.Router();
 
-studentRouter.get("/dashboard", getDashboard);
-studentRouter.get("/registrations", getMyRegistrations);
-studentRouter.get("/event/:eventId", getEventDetails);
-studentRouter.post("/event/:eventId/register", registerForEvent);
-studentRouter.post("/event/:eventId/cancel", cancelRegistration);
+    router.get("/dashboard", c.dashboard);
+    router.get("/registrations", c.myRegistrations);
+    router.get("/event/:eventId", c.eventDetails);
+    router.post("/event/:eventId/register", c.register);
+    router.post("/event/:eventId/cancel", c.cancel);
 
-module.exports = studentRouter;
+    return router;
+};

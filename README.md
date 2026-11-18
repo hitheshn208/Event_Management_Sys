@@ -14,12 +14,36 @@ What we can do?
 
 Built with an Express + PostgreSQL JSON API and a React (Vite) frontend.
 
-## Project layout
+## Architecture (Layers)
 
-- `app.js`, `routes/`, `controllers/`, `models/`: Express API, served under `/api/*`
-- `frontend/`: React app (Vite + React Router)
+```
+routes/         URL -> controller method (and auth guard / upload middleware)
+controllers/    HTTP adapters: read the request, call a service, shape the JSON
+services/       Business logic, one facade per area (auth, events, registrations)
+domain/         Objects with behaviour: users, events, registrations
+repositories/   All SQL. One class per table group, transaction-aware
+core/           Database pool, error types, password hashing, auth tokens
+```
+
+Each layer only depends on the layer below it. `container.js` creates every
+object once and passes collaborators in through constructors.
+
+Other folders:
+- `frontend/`: React app (Vite + React Router), talks to `/api/*`
 - `migrations/`: SQL schema and the migration runner
 - `public/uploads/`: uploaded event banners, served at `/uploads/*`
+
+## Design patterns
+
+| Pattern | Kind | Where | Why |
+|---|---|---|---|
+| Singleton | Creational | `core/Database.js` | One connection pool shared by every repository, with a `transaction()` helper |
+| Factory Method | Creational | `domain/events/EventFactory.js`, `Event.createRegistrationProcess()` | Builds `IndividualEvent` / `TeamEvent` from a DB row or form; each event type creates its own registration process |
+| Facade | Structural | `services/EventService.js`, `services/RegistrationService.js` | Controllers call one method instead of coordinating five repositories |
+| Template Method | Behavioral | `domain/registration/RegistrationProcess.js` | Fixed registration steps; `IndividualRegistrationProcess` and `TeamRegistrationProcess` override only the team-name and save steps |
+
+Class hierarchies: `User` -> `Student`, `Organization`; `Event` -> `IndividualEvent`, `TeamEvent`;
+`RegistrationProcess` -> `IndividualRegistrationProcess`, `TeamRegistrationProcess`; `AppError` -> 5 HTTP error types.
 
 ## Running locally
 
