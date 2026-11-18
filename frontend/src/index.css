@@ -13,96 +13,112 @@
   --font: "Outfit", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
-  --bg: #f5f6fb;
-  --surface: #ffffff;
-  --surface-2: #f8f9fc;
-  --border: #e5e7ef;
-  --border-strong: #d4d7e3;
-  --text: #141726;
-  --text-2: #4b5165;
-  --text-3: #7c8296;
+  /* Warm paper neutrals */
+  --bg: #f6f4ef;
+  --surface: #fffefb;
+  --surface-2: #f0ede6;
+  --border: #e4dfd5;
+  --border-strong: #d2cbbe;
+  --text: #1f1c18;
+  --text-2: #4f4a42;
+  --text-3: #857e72;
+  --ink: #1f1c18;
 
-  --success: #059669;
-  --success-bg: #ecfdf5;
-  --warning: #b45309;
-  --warning-bg: #fffbeb;
-  --danger: #dc2626;
-  --danger-bg: #fef2f2;
-  --info: #2563eb;
-  --info-bg: #eff6ff;
+  --success: #3f7d4e;
+  --success-bg: #e8f1e8;
+  --warning: #a0620f;
+  --warning-bg: #f8eedb;
+  --danger: #b3382c;
+  --danger-bg: #f8e7e3;
+  --info: #3c6386;
+  --info-bg: #e6eef5;
 
-  --radius-sm: 8px;
-  --radius: 14px;
-  --radius-lg: 20px;
-  --shadow-sm: 0 1px 2px rgb(16 24 40 / 0.05);
-  --shadow: 0 1px 3px rgb(16 24 40 / 0.06), 0 8px 24px -12px rgb(16 24 40 / 0.12);
-  --shadow-lg: 0 24px 48px -12px rgb(16 24 40 / 0.25);
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 14px;
+  --shadow-sm: 0 1px 2px rgb(31 28 24 / 0.05);
+  --shadow: 0 1px 2px rgb(31 28 24 / 0.04);
+  --shadow-lg: 0 12px 32px -12px rgb(31 28 24 / 0.22);
 
   --topbar-h: 64px;
   --sidebar-w: 236px;
 
-  /* Role accent (overridden per role below) */
-  --accent: #4f46e5;
-  --accent-hover: #4338ca;
-  --accent-soft: #eef2ff;
-  --accent-text: #3730a3;
-  --accent-grad: linear-gradient(135deg, #4f46e5, #7c3aed);
+  /* Neutral accent (landing, 404) */
+  --accent: #1f1c18;
+  --accent-hover: #3a352e;
+  --accent-soft: #ebe7de;
+  --accent-text: #1f1c18;
+  --accent-grad: var(--accent);
 
   color-scheme: light;
 }
 
+/* Students: forest green */
 .role-student {
-  --accent: #2563eb;
-  --accent-hover: #1d4ed8;
-  --accent-soft: #eff6ff;
-  --accent-text: #1e40af;
-  --accent-grad: linear-gradient(135deg, #2563eb, #0891b2);
+  --accent: #2f6b4f;
+  --accent-hover: #255a41;
+  --accent-soft: #e3eee6;
+  --accent-text: #24533d;
+  --accent-grad: var(--accent);
 }
 
+/* Organizers: rust */
 .role-organization {
-  --accent: #7c3aed;
-  --accent-hover: #6d28d9;
-  --accent-soft: #f5f3ff;
-  --accent-text: #5b21b6;
-  --accent-grad: linear-gradient(135deg, #7c3aed, #db2777);
+  --accent: #b0532c;
+  --accent-hover: #964524;
+  --accent-soft: #f6e6dc;
+  --accent-text: #8a3f1f;
+  --accent-grad: var(--accent);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0d0f17;
-    --surface: #161925;
-    --surface-2: #1c2030;
-    --border: #272b3b;
-    --border-strong: #353a4e;
-    --text: #eef0f7;
-    --text-2: #b4b9cc;
-    --text-3: #868ca3;
-    --success: #34d399;
-    --success-bg: rgb(52 211 153 / 0.12);
-    --warning: #fbbf24;
-    --warning-bg: rgb(251 191 36 / 0.12);
-    --danger: #f87171;
-    --danger-bg: rgb(248 113 113 / 0.12);
-    --info: #60a5fa;
-    --info-bg: rgb(96 165 250 / 0.12);
+    --bg: #161412;
+    --surface: #1e1b18;
+    --surface-2: #262220;
+    --border: #332e29;
+    --border-strong: #423c35;
+    --text: #efe9df;
+    --text-2: #c2b9ab;
+    --text-3: #8f8679;
+    --ink: #efe9df;
+    --success: #7fb88d;
+    --success-bg: rgb(127 184 141 / 0.12);
+    --warning: #d9a352;
+    --warning-bg: rgb(217 163 82 / 0.12);
+    --danger: #e07a6c;
+    --danger-bg: rgb(224 122 108 / 0.12);
+    --info: #86aacb;
+    --info-bg: rgb(134 170 203 / 0.12);
     --shadow-sm: none;
-    --shadow: 0 1px 0 rgb(255 255 255 / 0.03) inset;
-    --shadow-lg: 0 24px 48px -12px rgb(0 0 0 / 0.6);
-    --accent-soft: rgb(99 102 241 / 0.16);
-    --accent-text: #a5b4fc;
+    --shadow: none;
+    --shadow-lg: 0 16px 40px -12px rgb(0 0 0 / 0.6);
+    --accent: #efe9df;
+    --accent-hover: #ffffff;
+    --accent-soft: rgb(239 233 223 / 0.1);
+    --accent-text: #efe9df;
     color-scheme: dark;
   }
   .role-student {
-    --accent: #3b82f6;
-    --accent-hover: #60a5fa;
-    --accent-soft: rgb(59 130 246 / 0.16);
-    --accent-text: #93c5fd;
+    --accent: #6fae8b;
+    --accent-hover: #86c2a0;
+    --accent-soft: rgb(111 174 139 / 0.14);
+    --accent-text: #93c8aa;
   }
   .role-organization {
-    --accent: #8b5cf6;
-    --accent-hover: #a78bfa;
-    --accent-soft: rgb(139 92 246 / 0.16);
-    --accent-text: #c4b5fd;
+    --accent: #d9805a;
+    --accent-hover: #e6966f;
+    --accent-soft: rgb(217 128 90 / 0.14);
+    --accent-text: #e9a585;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .role-student .auth-aside {
+    background: #24533d;
+  }
+  .role-organization .auth-aside {
+    background: #8a3f1f;
   }
 }
 
@@ -213,15 +229,14 @@ textarea {
   width: 34px;
   height: 34px;
   border-radius: 10px;
-  background: var(--accent-grad);
-  box-shadow: 0 6px 16px -6px var(--accent);
+  background: var(--ink);
 }
 
 .brand-mark svg {
   width: 20px;
   height: 20px;
   fill: none;
-  stroke: #fff;
+  stroke: var(--bg);
   stroke-width: 3;
   stroke-linecap: round;
 }
@@ -235,10 +250,7 @@ textarea {
 
 .brand-name span {
   margin-left: 0.35em;
-  background: var(--accent-grad);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--accent);
 }
 
 .brand-lg .brand-mark {
@@ -283,8 +295,7 @@ textarea {
 
 .btn-primary {
   background: var(--accent);
-  color: #fff;
-  box-shadow: 0 4px 12px -6px var(--accent);
+  color: var(--surface);
 }
 
 .btn-primary:hover:not(:disabled) {
@@ -1032,11 +1043,11 @@ select:disabled {
 }
 
 .progress-high .progress-fill {
-  background: linear-gradient(90deg, #f59e0b, #f97316);
+  background: var(--warning);
 }
 
 .progress-full .progress-fill {
-  background: linear-gradient(90deg, #ef4444, #dc2626);
+  background: var(--danger);
 }
 
 .progress-meta {
@@ -1125,8 +1136,8 @@ select:disabled {
 .event-image-fallback {
   display: grid;
   place-items: center;
-  background: var(--accent-grad);
-  color: rgb(255 255 255 / 0.85);
+  background: var(--accent-soft);
+  color: var(--accent);
 }
 
 .badge-overlay,
@@ -1153,8 +1164,8 @@ select:disabled {
 
 .badge-overlay-left {
   left: 12px;
-  background: rgb(236 253 245 / 0.95);
-  color: #047857;
+  background: rgb(255 254 251 / 0.94);
+  color: #3f7d4e;
 }
 
 .event-card-body {
@@ -1608,10 +1619,10 @@ select:disabled {
   height: 54px;
   padding: 0 20px;
   border-radius: 999px;
-  background: var(--accent-grad);
-  color: #fff;
+  background: var(--accent);
+  color: var(--surface);
   font-weight: 600;
-  box-shadow: 0 12px 28px -10px var(--accent);
+  box-shadow: var(--shadow-lg);
   text-decoration: none !important;
   transition: transform 0.15s;
 }
@@ -1683,7 +1694,7 @@ select:disabled {
 
 .choice.selected .choice-icon {
   background: var(--accent);
-  color: #fff;
+  color: var(--surface);
 }
 
 .choice strong {
@@ -1825,11 +1836,9 @@ select:disabled {
 .auth-aside::after {
   content: "";
   position: absolute;
-  inset: auto -20% -40% auto;
-  width: 520px;
-  height: 520px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgb(255 255 255 / 0.18), transparent 70%);
+  inset: 0;
+  background-image: radial-gradient(rgb(255 255 255 / 0.09) 1px, transparent 1px);
+  background-size: 18px 18px;
   pointer-events: none;
 }
 
@@ -1838,13 +1847,11 @@ select:disabled {
 }
 
 .auth-aside .brand-mark {
-  background: rgb(255 255 255 / 0.18);
-  box-shadow: none;
+  background: rgb(255 255 255 / 0.16);
 }
 
 .auth-aside .brand-name span {
-  background: none;
-  color: rgb(255 255 255 / 0.75);
+  color: rgb(255 255 255 / 0.7);
 }
 
 .auth-aside h2 {
@@ -1910,10 +1917,7 @@ select:disabled {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background:
-    radial-gradient(900px 500px at 10% -10%, rgb(37 99 235 / 0.12), transparent 60%),
-    radial-gradient(900px 500px at 90% -10%, rgb(124 58 237 / 0.14), transparent 60%),
-    var(--bg);
+  background: var(--bg);
 }
 
 .landing-nav {
@@ -1945,10 +1949,8 @@ select:disabled {
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, #2563eb, #7c3aed 55%, #db2777);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  font-style: italic;
+  color: var(--text-3);
 }
 
 .landing-options {
@@ -1983,9 +1985,8 @@ select:disabled {
   width: 56px;
   height: 56px;
   border-radius: 16px;
-  background: var(--accent-grad);
-  color: #fff;
-  box-shadow: 0 10px 24px -10px var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
 }
 
 .option-card h2 {
@@ -2046,10 +2047,7 @@ select:disabled {
 .big-code {
   font-family: var(--font-mono);
   font-size: 96px;
-  background: var(--accent-grad);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--text-3);
 }
 
 /* ==========================================================================
