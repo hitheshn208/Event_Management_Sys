@@ -3,38 +3,31 @@ const dotenv = require("dotenv");
 const path = require("path");
 dotenv.config({ path : path.join(__dirname, "../.env")})
 
-exports.auth = (req, res, next)=>{
+// Returns the decoded token payload, or null if the cookie is missing/invalid.
+const decodeToken = (req) => {
     const token = req.cookies.token;
-
-    if(!token)
-        return res.redirect("/auth/student-login");
-    try{
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded;
-        if(req.user.role != "student")
-            throw new Error("User role must be student")
-        console.log(req.user);
-        next();
-    }catch (e){
-        console.log(e);
-        return res.redirect("/auth/student-login");
+    if (!token)
+        return null;
+    try {
+        return jwt.verify(token, process.env.JWT_SECRET);
+    } catch (e) {
+        return null;
     }
-}
+};
 
-exports.orgauth = (req, res, next)=>{
-    const token = req.cookies.token;
+const requireRole = (role) => (req, res, next) => {
+    const decoded = decodeToken(req);
 
-    if(!token)
-        return res.redirect("/auth/organizer-login");
-    try{
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded;
-        if(req.user.role != "organization")
-            throw new Error("User role must be a co-ordinator")
-        console.log(req.user);
-        next();
-    }catch (e){
-        console.log(e);
-        return res.redirect("/auth/organizer-login");
-    }
-}
+    if (!decoded)
+        return res.status(401).json({ message: "Please log in to continue" });
+
+    if (decoded.role !== role)
+        return res.status(403).json({ message: `This area is only for ${role} accounts` });
+
+    req.user = decoded;
+    next();
+};
+
+exports.decodeToken = decodeToken;
+exports.auth = requireRole("student");
+exports.orgauth = requireRole("organization");

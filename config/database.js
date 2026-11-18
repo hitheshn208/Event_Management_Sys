@@ -1,4 +1,8 @@
-const { Pool } = require("pg")
+const { Pool, types } = require("pg")
+
+// Return DATE columns as plain "YYYY-MM-DD" strings instead of JS Dates,
+// so they don't shift by a day when serialised to JSON in non-UTC timezones.
+types.setTypeParser(types.builtins.DATE, (value) => value);
 const dotenv = require('dotenv');
 const path = require("path");
 dotenv.config({ path: path.join(__dirname, '../.env') });

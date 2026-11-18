@@ -7,14 +7,16 @@
   "type": "commonjs",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon --ext js,ejs,html,css app.js"
+    "dev": "nodemon --watch app.js --watch controllers --watch routes --watch models --watch middleware --watch utils --watch config app.js",
+    "start": "node app.js",
+    "migrate": "node migrations/migrate.js",
+    "client": "npm --prefix frontend run dev",
+    "build": "npm --prefix frontend install && npm --prefix frontend run build"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "dotenv": "^17.4.2",
-    "ejs": "^5.0.2",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.1.1",

@@ -10,7 +10,22 @@ const {
 } = require("../models/studentModel");
 const { checkUSNformat } = require("../utils/validateUserInput");
 
-exports.showDashboard = async (req, res) => {
+const EVENT_DURATION_MS = 3 * 60 * 60 * 1000;
+
+const getEventStatus = (event, now = new Date()) => {
+    const datePart = String(event.event_date).slice(0, 10);
+    const timePart = String(event.event_time || "00:00:00").split(".")[0];
+    const eventStart = new Date(`${datePart}T${timePart}`);
+    const eventEnd = new Date(eventStart.getTime() + EVENT_DURATION_MS);
+
+    if (now >= eventStart && now <= eventEnd)
+        return "ongoing";
+    if (now > eventEnd)
+        return "completed";
+    return "upcoming";
+};
+
+exports.getDashboard = async (req, res) => {
     try {
         const userId = req.user.id;
         const [student, events] = await Promise.all([
@@ -18,14 +33,14 @@ exports.showDashboard = async (req, res) => {
             getEventsForStudentDashboard(userId)
         ]);
 
-        res.render("studentDashboard", { student, events, userId });
+        return res.json({ student, events });
     } catch (error) {
         console.log(error);
-        return res.status(500).send("Internal server error");
+        return res.status(500).json({ message: "Internal server error" });
     }
 };
 
-exports.showMyRegistrationsPage = async (req, res) => {
+exports.getMyRegistrations = async (req, res) => {
     try {
         const userId = req.user.id;
         const [student, registrations] = await Promise.all([
@@ -34,37 +49,22 @@ exports.showMyRegistrationsPage = async (req, res) => {
         ]);
 
         const now = new Date();
-        const registrationsWithStatus = (registrations || []).map((event) => {
-            const datePart = new Date(event.event_date).toISOString().split("T")[0];
-            const timePart = String(event.event_time || "00:00:00").split(".")[0];
-            const eventStart = new Date(`${datePart}T${timePart}`);
-            const eventEnd = new Date(eventStart.getTime() + (3 * 60 * 60 * 1000));
+        const registrationsWithStatus = (registrations || []).map((event) => ({
+            ...event,
+            status: getEventStatus(event, now)
+        }));
 
-            let status = "upcoming";
-            if (now >= eventStart && now <= eventEnd) {
-                status = "ongoing";
-            } else if (now > eventEnd) {
-                status = "completed";
-            }
-
-            return {
-                ...event,
-                status
-            };
-        });
-
-        return res.render("studentRegistrations", {
+        return res.json({
             student,
-            userId,
             registrations: registrationsWithStatus
         });
     } catch (error) {
         console.log(error);
-        return res.status(500).send("Internal server error");
+        return res.status(500).json({ message: "Internal server error" });
     }
 };
 
-exports.showEventRegistrationPage = async (req, res) => {
+exports.getEventDetails = async (req, res) => {
     const userId = req.user.id;
     const eventId = req.params.eventId;
 
@@ -75,83 +75,43 @@ exports.showEventRegistrationPage = async (req, res) => {
         ]);
 
         if (!event) {
-            return res.status(404).send("Event not found");
+            return res.status(404).json({ message: "Event not found" });
         }
 
-        return res.render("studentEventRegister", {
-            student,
-            userId,
-            event,
-            error: null,
-            submittedUsns: [],
-            submittedTeamName: ""
-        });
+        return res.json({ student, event });
     } catch (error) {
         console.log(error);
-        return res.status(500).send("Internal server error");
-    }
-};
-
-exports.showEventDetailsPage = async (req, res) => {
-    const userId = req.user.id;
-    const eventId = req.params.eventId;
-
-    try {
-        const [student, event] = await Promise.all([
-            getStudentInfoByUsn(userId),
-            getEventRegistrationInfo(eventId, userId)
-        ]);
-
-        if (!event) {
-            return res.status(404).send("Event not found");
-        }
-
-        return res.render("studentEventDetails", {
-            student,
-            userId,
-            event
-        });
-    } catch (error) {
-        console.log(error);
-        return res.status(500).send("Internal server error");
+        return res.status(500).json({ message: "Internal server error" });
     }
 };
 
 exports.registerForEvent = async (req, res) => {
     const userId = req.user.id;
     const eventId = req.params.eventId;
-    let submittedTeamName = "";
+
+    const fail = (status, message) => res.status(status).json({ message });
 
     try {
-        const [student, event] = await Promise.all([
-            getStudentInfoByUsn(userId),
-            getEventRegistrationInfo(eventId, userId)
-        ]);
+        const event = await getEventRegistrationInfo(eventId, userId);
 
         if (!event) {
-            return res.status(404).send("Event not found");
+            return fail(404, "Event not found");
         }
 
         if (event.is_registered) {
-            return res.redirect("/student/dashboard");
+            return fail(409, "You are already registered for this event.");
+        }
+
+        const capacity = Number(event.total_capacity || 0);
+        if (capacity > 0 && Number(event.registered || 0) >= capacity) {
+            return fail(409, "This event has reached capacity.");
         }
 
         const rawUsns = Array.isArray(req.body.teamUsns)
             ? req.body.teamUsns
             : [req.body.teamUsns];
-        submittedTeamName = String(req.body.teamName || "").trim();
+        const submittedTeamName = String(req.body.teamName || "").trim();
         const teamName = submittedTeamName.length > 0 ? submittedTeamName : null;
-
-        if (!event.isindividual && !teamName) {
-            return res.status(400).render("studentEventRegister", {
-                student,
-                userId,
-                event,
-                error: "Team name is required for team events.",
-                submittedUsns: normalizedUsns,
-                submittedTeamName
-            });
-        }
 
         const normalizedUsns = [...new Set(
             rawUsns
@@ -159,94 +119,45 @@ exports.registerForEvent = async (req, res) => {
                 .filter((usn) => usn.length > 0)
         )];
 
+        if (!event.isindividual && !teamName) {
+            return fail(400, "Team name is required for team events.");
+        }
+
         const minMembers = event.isindividual ? 1 : Number(event.min_members || 1);
         const maxMembers = event.isindividual ? 1 : Number(event.max_members || minMembers);
 
         if (normalizedUsns.length < minMembers || normalizedUsns.length > maxMembers) {
-            return res.status(400).render("studentEventRegister", {
-                student,
-                userId,
-                event,
-                error: `Enter between ${minMembers} and ${maxMembers} valid USN values.`,
-                submittedUsns: normalizedUsns,
-                submittedTeamName
-            });
+            return fail(400, `Enter between ${minMembers} and ${maxMembers} valid USN values.`);
         }
 
         const invalidUsns = normalizedUsns.filter((usn) => !checkUSNformat(usn));
         if (invalidUsns.length > 0) {
-            return res.status(400).render("studentEventRegister", {
-                student,
-                userId,
-                event,
-                error: `Invalid USN format: ${invalidUsns.join(", ")}`,
-                submittedUsns: normalizedUsns,
-                submittedTeamName
-            });
+            return fail(400, `Invalid USN format: ${invalidUsns.join(", ")}`);
         }
 
         if (!normalizedUsns.includes(String(userId).toUpperCase())) {
-            return res.status(400).render("studentEventRegister", {
-                student,
-                userId,
-                event,
-                error: "Your own USN must be included in the team list.",
-                submittedUsns: normalizedUsns,
-                submittedTeamName
-            });
+            return fail(400, "Your own USN must be included in the team list.");
         }
 
         const missingStudents = await getMissingStudents(normalizedUsns);
         if (missingStudents.length > 0) {
-            return res.status(400).render("studentEventRegister", {
-                student,
-                userId,
-                event,
-                error: `These USNs do not have EventHub accounts: ${missingStudents.join(", ")}`,
-                submittedUsns: normalizedUsns,
-                submittedTeamName
-            });
+            return fail(400, `These USNs do not have EventHub accounts: ${missingStudents.join(", ")}`);
         }
 
         const alreadyRegistered = await getAlreadyRegisteredMembers(eventId, normalizedUsns);
         if (alreadyRegistered.length > 0) {
-            return res.status(400).render("studentEventRegister", {
-                student,
-                userId,
-                event,
-                error: `Already registered for this event: ${alreadyRegistered.join(", ")}`,
-                submittedUsns: normalizedUsns,
-                submittedTeamName
-            });
+            return fail(400, `Already registered for this event: ${alreadyRegistered.join(", ")}`);
         }
 
         await registerStudentsForEvent(eventId, normalizedUsns, teamName);
 
-        return res.redirect("/student/dashboard");
+        return res.json({
+            message: "Registration successful",
+            redirecturl: "/student/registrations"
+        });
     } catch (error) {
         console.log(error);
-
-        try {
-            const [student, event] = await Promise.all([
-                getStudentInfoByUsn(userId),
-                getEventRegistrationInfo(eventId, userId)
-            ]);
-
-            if (event) {
-                return res.status(500).render("studentEventRegister", {
-                    student,
-                    userId,
-                    event,
-                    error: "Unable to register right now. Try again.",
-                    submittedUsns: [],
-                    submittedTeamName
-                });
-            }
-        } catch (renderError) {
-            console.log(renderError);
-        }
-
-        return res.status(500).send("Internal server error");
+        return fail(500, "Unable to register right now. Try again.");
     }
 };
 
@@ -255,10 +166,15 @@ exports.cancelRegistration = async (req, res) => {
     const eventId = req.params.eventId;
 
     try {
-        await cancelStudentRegistration(eventId, userId);
-        return res.redirect("/student/registrations");
+        const cancelled = await cancelStudentRegistration(eventId, userId);
+
+        if (!cancelled) {
+            return res.status(404).json({ message: "Registration not found" });
+        }
+
+        return res.json({ message: "Registration cancelled" });
     } catch (error) {
         console.log(error);
-        return res.status(500).send("Internal server error");
+        return res.status(500).json({ message: "Internal server error" });
     }
 };

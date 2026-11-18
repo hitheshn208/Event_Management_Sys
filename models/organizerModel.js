@@ -210,6 +210,7 @@ exports.getEventInfoByid = async (eventid, orgId)=>{
     e.event_date,
     e.event_time,
     e.group_chatlink,
+    e.imgurl,
     e.organizerid,
 
     r.isindividual,
@@ -320,7 +321,7 @@ exports.updateEvent = async ({ eventId, orgId, name, category, description, even
 }
 
 exports.deleteEvent = async (eventId, orgId) => {
-    await db.query("DELETE FROM EVENT WHERE id = $1", [eventId]);
+    await db.query("DELETE FROM event WHERE id = $1 AND organizerid = $2", [eventId, orgId]);
 };
 
 exports.getOrgInfo = async (orgId)=>{

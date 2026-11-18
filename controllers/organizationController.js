@@ -1,39 +1,35 @@
 const {checkVenue, registerEvent, addrules, addcoordinators, getEventsByOrgId, getRegistrationEventsByOrgId, getEventRegistrationsForOrg, getEventInfoByid, updateEvent, deleteEvent, getOrgInfo} = require("../models/organizerModel")
 
-exports.showOrgDashboard = async (req, res)=>{
+const serverError = (res) => res.status(500).json({ message: "Internal server error" });
+
+exports.getOrgDashboard = async (req, res)=>{
     try {
-        const events = await getEventsByOrgId(req.user.id);
-        const org = await getOrgInfo(req.user.id);
-        res.render("orgdashboard", {events, org});
+        const [events, org] = await Promise.all([
+            getEventsByOrgId(req.user.id),
+            getOrgInfo(req.user.id)
+        ]);
+        return res.json({ events, org });
     } catch (e) {
         console.log(e);
-        return res.status(500).send("Internal server error");
+        return serverError(res);
     }
 }
 
-exports.showAllEventRegistrationsPage = async (req, res) => {
+exports.getAllEventRegistrations = async (req, res) => {
     try {
         const [org, events] = await Promise.all([
             getOrgInfo(req.user.id),
             getRegistrationEventsByOrgId(req.user.id)
         ]);
 
-        return res.render("orgEventRegistrations", {
-            org,
-            events,
-            registrationsViewMode: "all"
-        });
+        return res.json({ org, events });
     } catch (error) {
         console.log(error);
-        return res.status(500).send("Internal server error");
+        return serverError(res);
     }
 };
 
-exports.showOrganiseEvent = (req, res)=>{
-    res.render("eventregistration");
-}
-
-exports.showEventRegistrationsPage = async (req, res) => {
+exports.getEventRegistrations = async (req, res) => {
     const orgId = req.user.id;
     const eventId = req.params.eventId;
 
@@ -44,7 +40,7 @@ exports.showEventRegistrationsPage = async (req, res) => {
         ]);
 
         if (!eventData) {
-            return res.status(404).send("Event not found");
+            return res.status(404).json({ message: "Event not found" });
         }
 
         const capacity = Number(eventData.event.total_capacity || 0);
@@ -52,32 +48,31 @@ exports.showEventRegistrationsPage = async (req, res) => {
             ? Math.min(100, Math.round((eventData.totalRegistrations / capacity) * 100))
             : 0;
 
-        return res.render("orgEventRegistrations", {
+        return res.json({
             org,
             event: eventData.event,
             registrations: eventData.registrations,
             totalRegistrations: eventData.totalRegistrations,
             capacity,
-            registrationPercent,
-            registrationsViewMode: "single"
+            registrationPercent
         });
     } catch (error) {
         console.log(error);
-        return res.status(500).send("Internal server error");
+        return serverError(res);
     }
 };
 
 exports.createEvent = async (req, res)=>{
-    const {eventName, category, description, date, time, block, hall, groupChatLink, departmentRestriction, eventInstructions, eventType, coordinators} = JSON.parse(req.body.data);    
     const organiserid = req.user.id;
-    // const {path, mimetype} = req.file;
-    const path = "/uploads/" + req.file.filename;
-    // console.log(path);
 
     try{
+        // eventInstructions is collected by the form but not stored yet.
+        const {eventName, category, description, date, time, block, hall, groupChatLink, departmentRestriction, eventInstructions, eventType, coordinators} = JSON.parse(req.body.data);
+        const path = req.file ? "/uploads/" + req.file.filename : null;
+
         const venueId = await checkVenue(block, hall);
         if(!venueId)
-            return res.status(401).json({
+            return res.status(400).json({
                 message: "Venue not found"
             })
         
@@ -88,7 +83,8 @@ exports.createEvent = async (req, res)=>{
         else
             await addrules(eventId, false, Number(eventType.totalTeams), Number(eventType.minSize), Number(eventType.maxSize), departmentRestriction);
 
-        await addcoordinators(coordinators, eventId);
+        if (Array.isArray(coordinators) && coordinators.length > 0)
+            await addcoordinators(coordinators, eventId);
 
         return res.status(200).json({
             message : "Event created successfully",
@@ -101,23 +97,22 @@ exports.createEvent = async (req, res)=>{
             message: "Internal server error"
         })
     }
-    console.log(req.body);
 }
 
-exports.editEvent = async (req, res)=>{
+exports.getEventForEdit = async (req, res)=>{
     const eventid = req.params.eventId;
     const orgId = req.user.id;
     try {
         const eventInfo = await getEventInfoByid(eventid, orgId);
 
         if (!eventInfo) {
-            return res.status(404).send("Event not found");
+            return res.status(404).json({ message: "Event not found" });
         }
 
-        return res.render("eventEdit", { event: eventInfo });
+        return res.json({ event: eventInfo });
     } catch (error) {
         console.log(error);
-        return res.status(500).send("Internal server error");
+        return serverError(res);
     }
 }
 

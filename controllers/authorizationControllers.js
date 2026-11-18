@@ -1,29 +1,48 @@
-const { render } = require("ejs");
 const {checkRegistered, registerUser, findStudentByUSN, checkOrgRegistered, registerOrgdb, findOrg} = require("../models/authModels");
 const {checkUSNformat} = require("../utils/validateUserInput");
 const {hashPassword, comparePassword} = require("../utils/hashPassword");
 const {setCookie} = require("../utils/generateToken");
+const {decodeToken} = require("../middleware/authmiddleware");
+const {getStudentInfoByUsn} = require("../models/studentModel");
+const {getOrgInfo} = require("../models/organizerModel");
 
-exports.showStudentLoginPage = (req, res)=>{
-    res.render("studentlogin");
-}
+const clearAuthCookie = (res) => {
+    res.clearCookie("token", {
+        httpOnly: true,
+        secure: false,
+        sameSite: "lax",
+    });
+};
 
+exports.getCurrentUser = async (req, res) => {
+    const decoded = decodeToken(req);
 
-exports.showOrgLoginPage = (req, res)=>{
-    res.render("orglogin");
-}
+    if (!decoded)
+        return res.status(401).json({ message: "Not logged in" });
 
-exports.showStudentRegisterPage = (req, res)=>{
-    res.render("studentregister");
-}
+    try {
+        if (decoded.role === "student") {
+            const student = await getStudentInfoByUsn(decoded.id);
+            if (student)
+                return res.json({ role: "student", user: student });
+        } else if (decoded.role === "organization") {
+            const org = await getOrgInfo(decoded.id);
+            if (org)
+                return res.json({ role: "organization", user: { id: decoded.id, ...org } });
+        }
+    } catch (e) {
+        console.log(e);
+        return res.status(500).json({ message: "Internal server error" });
+    }
 
-
-exports.showOrgRegisterPage = (req, res)=>{
-    res.render("orgregister");
+    // Token is valid but the account no longer exists.
+    clearAuthCookie(res);
+    return res.status(401).json({ message: "Not logged in" });
 }
 
 exports.registerStudent = async (req, res)=>{
-    const { usn, name, phone, email, password } = req.body;
+    const { name, phone, email, password } = req.body;
+    const usn = String(req.body.usn || "").trim().toUpperCase();
 
     if(!checkUSNformat(usn))
     {
@@ -63,7 +82,8 @@ exports.registerStudent = async (req, res)=>{
 }
 
 exports.loginStudent = async (req, res) => {
-    const { usn, password } = req.body;
+    const usn = String(req.body.usn || "").trim().toUpperCase();
+    const { password } = req.body;
 
     if (!usn || !password) {
         return res.status(400).json({
@@ -132,6 +152,12 @@ exports.loginOrg = async(req, res)=>{
 
     const { username, password} = req.body;
     let organization;
+
+    if (!username || !password) {
+        return res.status(400).json({
+            message: "Username and password are required"
+        });
+    }
     try{
         organization = await findOrg(username.trim())                               //^Query
         if (!organization) {
@@ -160,11 +186,6 @@ exports.loginOrg = async(req, res)=>{
 
 
 exports.logoutUser = (req, res)=>{
-    res.clearCookie("token",{
-        httpOnly: true,
-        secure: false,
-        sameSite: "lax",
-    });
-
-    return res.redirect("/");
+    clearAuthCookie(res);
+    return res.json({ message: "Logged out", redirecturl: "/" });
 }
